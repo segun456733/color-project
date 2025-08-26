@@ -1,139 +1,360 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Color World</title>
-  <link rel="stylesheet" href="style.css">
- <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Miniver&family=Permanent+Marker&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.0.0/css/all.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
+  <!-- Fonts & Icons -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+  <!-- your CSS -->
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <section id="animation" class="animation">
-    <div class="circle"></div>
-    <h2 class="welcome-text">Loading Color World...</h2>
-  </section>
 
+  <!-- Loading / Splash animation (shows on page load) -->
+  <section id="splash" class="splash">
+    <div class="splash-inner">
+      <div class="splash-circle"></div>
+      <h2>Loading Color World...</h2>
+    </div>
+  </section>
+  
   <!-- Header / Navbar -->
-  <header>
+  <header class="site-header">
     <div class="logo">🎨 color palette</div>
-    <nav >
-      <div class="navbar">
-        <i class="fas fa-times" id="closeMenu"></i>
-      <ul class="nav-links" >
+    <nav>
+      <ul id="navLinks" class="nav-links">
         <li><a href="#home">Home</a></li>
         <li><a href="#generator">Generator</a></li>
-        <li><a href="#about">About</a></li>
+        <li><a href="#tools">Tools</a></li>
+        <li><a href="#extra-tools">Extra</a></li>
         <li><a href="#contact">Contact</a></li>
-        <li><a href="#help"> Help</a></li>
       </ul>
-      </div>
-      <i class="fas fa-bars" id="openMenu"></i>
+      <button id="menuToggle"><i class="fa fa-bars"></i></button>
     </nav>
   </header>
-
-  <!-- Landing Page -->
-  <section id="home" class="landing">
-    <h1>Find Your Perfect Colors in Seconds</h1>
-    <p>Effortlessly generate beautiful color palettes <br> designed to inspire your creativity and streamline your workflow.</p>
-    <a href="#generator" class="btn">start creating</a>
-    <div class="color-slider ">
-      <div class="slider-animation">
-    <div class="colors"><div class="color-image" style="background: #f5a066;"></div></div>
-    <div class="colors"><div class="color-image" style="background:#a5885f ;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #fe95b2;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #a3be0d;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #f5a066;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #fe95b2;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #a5885f;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #4173dc;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #08d53e;"></div></div>
-    <div class="colors"><div class="color-image" style="background:#5ce3ff ;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #fe1725;"></div></div>
-    <div class="colors"><div class="color-image" style="background:#3051b9 ;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #b9ecac;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #d91e9c;"></div></div>
-    <div class="colors"><div class="color-image" style="background:#ff852e"></div></div>
-    <div class="colors"><div class="color-image" style="background:#f1e851;"></div></div>
-    <div class="colors"><div class="color-image" style="background:#f1e851 "></div></div>
-    <div class="colors"><div class="color-image" style="background:#49eeb5"></div></div>
-    <div class="colors"><div class="color-image" style="background: #20c551;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #c6a26b;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #fb6bcd;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #f5a066;"></div></div>
-    <div class="colors"><div class="color-image" style="background:#a5885f ;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #fe95b2;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #a3be0d;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #f5a066;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #fe95b2;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #a5885f;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #4173dc;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #08d53e;"></div></div>
-    <div class="colors"><div class="color-image" style="background:#5ce3ff ;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #fe1725;"></div></div>
-    <div class="colors"><div class="color-image" style="background:#3051b9 ;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #b9ecac;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #d91e9c;"></div></div>
-    <div class="colors"><div class="color-image" style="background:#ff852e"></div></div>
-    <div class="colors"><div class="color-image" style="background:#f1e851;"></div></div>
-    <div class="colors"><div class="color-image" style="background:#f1e851 "></div></div>
-    <div class="colors"><div class="color-image" style="background:#49eeb5"></div></div>
-    <div class="colors"><div class="color-image" style="background: #20c551;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #c6a26b;"></div></div>
-    <div class="colors"><div class="color-image" style="background: #fb6bcd;"></div></div>
-    </div>
-   </div>
-  </section>
-
-
-  <!-- Welcome Animation -->
-
-  <!-- Color Palette Generator -->
-  <section id="generator" class="generator">
-    <h2>Color Palette Generator</h2>
-    <div class="palette">
-      <div class="color-box" style="background-color:#e2ab21 ;"><span class="copy">Copy</span></div>
-      <div class="color-box" style="background-color: #84b96a;"><span class="copy">Copy</span></div>
-      <div class="color-box"  style="background-color: #fa5822;"><span class="copy">Copy</span></div>
-      <div class="color-box"  style="background-color: #6dee23;"><span class="copy">Copy</span></div>
+  
+  <div id="navOverlay" class="nav-overlay"></div>
+  
+  
+  <!-- Landing / hero (same design as before) -->
+  <main>
+    <section id="home" class="landing">
+      <h1>Find Your Perfect Colors in Seconds</h1>
+      <p>Effortlessly generate beautiful color palettes to inspire your creativity and speed up your workflow.</p>
+      <a href="#generator" id="startBtn" class="btn btn-glow">Start Creating</a>
+      
+      <!-- Seamless Color Film (animated strip) -->
+      <div class="color-slider">
+        <div class="slider-track" id="sliderTrack">
+          <div class="colors"><div class="color-image" style="background:#f5a066"></div></div>
+          <div class="colors"><div class="color-image" style="background:#a5885f"></div></div>
+          <div class="colors"><div class="color-image" style="background:#fe95b2"></div></div>
+          <div class="colors"><div class="color-image" style="background:#a3be0d"></div></div>
+          <div class="colors"><div class="color-image" style="background:#4173dc"></div></div>
+          <div class="colors"><div class="color-image" style="background:#08d53e"></div></div>
+          <div class="colors"><div class="color-image" style="background:#5ce3ff"></div></div>
+          <div class="colors"><div class="color-image" style="background:#fe1725"></div></div>
+          <div class="colors"><div class="color-image" style="background:#3051b9"></div></div>
+          <div class="colors"><div class="color-image" style="background:#b9ecac"></div></div>
+          <div class="colors"><div class="color-image" style="background:#d91e9c"></div></div>
+          <div class="colors"><div class="color-image" style="background:#ff852e"></div></div>
+          <div class="colors"><div class="color-image" style="background:#f1e851"></div></div>
+          <div class="colors"><div class="color-image" style="background:#49eeb5"></div></div>
+          <div class="colors"><div class="color-image" style="background:#20c551"></div></div>
+          <div class="colors"><div class="color-image" style="background:#c6a26b"></div></div>
+          <div class="colors"><div class="color-image" style="background:#fb6bcd"></div></div>
+        </div>
       </div>
-    <button class="btt" id="generate-btn">Generate Palette</button>
-    <p class="hint">Or press Spacebar</p>
-  </section>
+    </section>
 
-  <!-- About Section -->
-  <section id="about" class="about">
-    <h2>About This Project</h2>
-    <p>
-      Color World is a simple color palette generator designed to help
-      designers, developers, and creatives find beautiful color combinations
-      quickly.
-    </p>
-  </section>
+    <!-- Generator (keeps original functions) -->
+    <section id="generator" class="generator">
+      <h2>Color Palette Generator</h2>
+      <div class="palette" id="palette">
+        <div class="color-box"><span class="copy">#e2ab21</span></div>
+        <div class="color-box"><span class="copy">#84b96a</span></div>
+        <div class="color-box"><span class="copy">#fa5822</span></div>
+        <div class="color-box"><span class="copy">#6dee23</span></div>
+        <div class="color-box"><span class="copy">#6c63ff</span></div>
+        <div class="color-box"><span class="copy">#03a9f4</span></div>
+      </div>
 
-  <!-- Contact Section -->
-  <section id="contact" class="contact">
-    <h2>feed back</h2>
-   
-    <form>
-      <input type="text" placeholder="Your Name" required>
-      <input type="email" placeholder="Your Email" required>
-      <textarea placeholder="Your Message"></textarea>
-      <button type="submit">submit</button>
-    </form>
-     <p><i class="fas fa-paper-plane"></i>segunstar@gmail.com</p>
-                    <p><i class="fas fa-phone-square-alt"></i>+12347046052673</p>
-                    <div class="social-icon">
-                        <a href="https://facebook.com/"><i class="fab fa-facebook"></i></a>
-                        <a href="https://twitter.com/"> <i class="fab fa-twitter-square"></i></a>
-                        <a href="https://instagram.com/"><i class="fab fa-instagram"></i></a>
-                         <a href="https://linkedin.com/"><i class="fab fa-linkedin"></i></a>
-                    </div>
-  </section>
+      <div class="controls">
+        <button id="generate-btn" class="btn">Generate Palette</button>
+        <p class="hint">Or press <b>Spacebar</b></p>
+      </div>
+    </section>
 
+    <!-- Tools (existing ones) -->
+    <section id="tools" class="tools">
+      <h2>Tools for Designers & Developers</h2>
+      <div class="tool-grid">
+
+        <!-- Contrast Checker -->
+        <div class="tool card-plain">
+          <h3>Contrast Checker</h3>
+          <div class="inline-controls">
+            <div class="swatch">
+              <label>Color 1</label>
+              <input type="color" id="color1" value="#ffffff" />
+              <label class="mini"><input type="radio" name="contrastTarget" value="color1" checked /> set from palette</label>
+            </div>
+            <div class="swatch">
+              <label>Color 2</label>
+              <input type="color" id="color2" value="#000000" />
+              <label class="mini"><input type="radio" name="contrastTarget" value="color2" /> set from palette</label>
+            </div>
+          </div>
+          <p id="contrast-result">Contrast Ratio: –</p>
+          <p id="contrast-rating" class="rating">WCAG: –</p>
+        </div>
+
+        <!-- Gradient Generator -->
+        <div class="tool card-plain">
+          <h3>Gradient Generator</h3>
+          <div class="inline-controls">
+            <div class="swatch">
+              <label>Stop 1</label>
+              <input type="color" id="gradColor1" value="#03a9f4" />
+              <label class="mini"><input type="radio" name="gradientTarget" value="gradColor1" checked /> set from palette</label>
+            </div>
+            <div class="swatch">
+              <label>Stop 2</label>
+              <input type="color" id="gradColor2" value="#f441a5" />
+              <label class="mini"><input type="radio" name="gradientTarget" value="gradColor2" /> set from palette</label>
+            </div>
+          </div>
+
+          <label class="angle-row">Angle
+            <input type="range" id="gradAngle" min="0" max="360" value="90" />
+            <span id="angleVal">90°</span>
+          </label>
+
+          <div id="gradient-preview" class="gradient-preview"></div>
+          <button id="copyGradient" class="small-btn">Copy CSS</button>
+        </div>
+        <div class="section "id="dev-tools" class="dev-tools">
+        <div class="tool-icons">
+    <!-- Figma -->
+    <a href="https://www.figma.com" target="_blank" title="Figma">
+      <i class="fab fa-figma"></i>
+    </a>
+
+    <!-- Sketch -->
+    <a href="https://www.sketch.com" target="_blank" title="Sketch">
+      <i class="fab fa-sketch"></i>
+    </a>
+
+    <!-- Adobe XD -->
+    <a href="https://www.adobe.com/products/xd.html" target="_blank" title="Adobe XD">
+      <i class="fab fa-adobe"></i>
+    </a>
+
+    <!-- VS Code -->
+    <a href="https://code.visualstudio.com" target="_blank" title="Visual Studio Code">
+      <i class="fas fa-code"></i>
+    </a>
+
+    <!-- GitHub -->
+    <a href="https://github.com" target="_blank" title="GitHub">
+      <i class="fab fa-github"></i>
+    </a>
+
+    <!-- Node.js -->
+    <a href="https://nodejs.org/" target="_blank" title="Node.js">
+      <i class="fab fa-node-js"></i>
+    </a>
+
+    <!-- React -->
+    <a href="https://reactjs.org/" target="_blank" title="React">
+      <i class="fab fa-react"></i>
+    </a>
+
+    <!-- NPM -->
+    <a href="https://www.npmjs.com/" target="_blank" title="NPM">
+      <i class="fab fa-npm"></i>
+    </a>
+
+    <!-- Tailwind CSS -->
+    <a href="https://tailwindcss.com/" target="_blank" title="Tailwind CSS">
+      <i class="fas fa-layer-group"></i>
+    </a>
+
+    <!-- MDN Web Docs -->
+    <a href="https://developer.mozilla.org" target="_blank" title="MDN Web Docs">
+      <i class="fab fa-mdn"></i>
+    </a>
+
+    <!-- WCAG -->
+    <a href="https://www.w3.org/WAI/WCAG21/quickref/" target="_blank" title="WCAG Guidelines">
+      <i class="fas fa-universal-access"></i>
+    </a>
+
+    <!-- HTML5 -->
+    <a href="https://developer.mozilla.org/en-US/docs/Web/HTML" target="_blank" title="HTML5">
+      <i class="fab fa-html5"></i>
+    </a>
+
+    <!-- CSS3 -->
+    <a href="https://developer.mozilla.org/en-US/docs/Web/CSS" target="_blank" title="CSS3">
+      <i class="fab fa-css3-alt"></i>
+    </a>
+
+    <!-- JavaScript -->
+    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" title="JavaScript">
+      <i class="fab fa-js-square"></i>
+    </a>
+  </div>
+</div>
+      </div>
+    </section>
+
+    <!-- Extra Tools (TABS) -->
+    <section id="extra-tools" class="extra-tools">
+      <h2>Extra Tools</h2>
+
+      <div class="tabs" id="extraTabs">
+        <div class="tab-buttons" role="tablist">
+          <!--
+          <button class="tab-btn active" data-tab="tab-contrast">Contrast</button>
+          <button class="tab-btn" data-tab="tab-harmony">Harmony</button>
+          <button class="tab-btn" data-tab="tab-blind">Blindness</button>
+          <button class="tab-btn" data-tab="tab-extract">Image Extractor</button>
+          <button class="tab-btn" data-tab="tab-shades">Shades & Tints</button>
+          <button class="tab-btn" data-tab="tab-export">Export</button>
+          -->
+        </div>
+
+        <div class="tab-panels">
+          <!-- Tab: Contrast (duplicate but namespaced to avoid clash) -->
+          <div id="tab-contrast" class="tab-panel active">
+            <div class="tool-card">
+              <h3>Contrast Checker (Extra)</h3>
+              <div class="inline-controls">
+                <label>Color A <input type="color" id="extra_color_a" value="#000000"></label>
+                <label>Color B <input type="color" id="extra_color_b" value="#ffffff"></label>
+              </div>
+              <p id="extra_contrast_result">Contrast Ratio: -</p>
+              <div class="contrast-preview">
+                <div id="extra_preview_a" class="preview-box">Sample Text</div>
+                <div id="extra_preview_b" class="preview-box">Sample Text</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Harmony -->
+          <div id="tab-harmony" class="tab-panel">
+            <div class="tool-card">
+              <h3>Color Harmony</h3>
+              <label>Base <input type="color" id="h_base" value="#ff6600"></label>
+              <label>Mode
+                <select id="h_mode">
+                  <option value="complementary">Complementary</option>
+                  <option value="analogous">Analogous</option>
+                  <option value="triadic">Triadic</option>
+                  <option value="tetradic">Tetradic</option>
+                  <option value="monochrome">Monochrome</option>
+                </select>
+              </label>
+              <div id="harmony_grid" class="harmony-grid"></div>
+              <div class="cw-row">
+                <button id="h_generate" class="btn2">Generate Harmony</button>
+                <button id="h_copy" class="btn2">Copy Colors</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Blindness -->
+          <div id="tab-blind" class="tab-panel">
+            <div class="tool-card">
+              <h3>Color Blindness Simulator</h3>
+              <div class="inline-controls">
+                <label>Text <input type="color" id="cb_text" value="#000000"></label>
+                <label>BG <input type="color" id="cb_bg" value="#ff6600"></label>
+              </div>
+              <p id="cb_ratio">Contrast Ratio: -</p>
+              <div id="cb_grid" class="color-blind-grid"></div>
+            </div>
+          </div>
+
+          <!-- Tab: Image Extractor -->
+          <div id="tab-extract" class="tab-panel">
+            <div class="tool-card">
+              <h3>Image Color Extractor</h3>
+              <input type="file" id="img_input" accept="image/*" />
+              <canvas id="extract_canvas" style="display:none"></canvas>
+              <div id="extracted_colors" class="extracted-grid"></div>
+              <div class="cw-row">
+                <button id="ex_copy" class="btn2">Copy Palette</button>
+                <button id="ex_download" class="btn2">Download Palette</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tab: Shades & Tints -->
+          <div id="tab-shades" class="tab-panel">
+            <div class="tool-card">
+              <h3>Shades & Tints Generator</h3>
+              <label>Base <input type="color" id="sh_base" value="#ff6600"></label>
+              <button id="sh_generate" class="btn2">Generate Shades/Tints</button>
+              <div id="sh_grid" class="shades-grid"></div>
+            </div>
+          </div>
+
+          <!-- Tab: Export -->
+          <div id="tab-export" class="tab-panel">
+            <div class="tool-card">
+              <h3>Export</h3>
+              <p>Download current palette / gradient or export as JSON.</p>
+              <div class="cw-row">
+                <button id="export_palette" class="btn2">Download Palette (.txt)</button>
+                <button id="export_json" class="btn2">Export JSON</button>
+                <button id="export_grad_img" class="btn2">Download Gradient (PNG)</button>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+
+<!-- Toast Notification -->
+<section id="contact" class="contact">
+  <h2>Feedback</h2>
+  <form id="contactForm" action="https://formspree.io/f/{form_id}" method="post">
+    <input type="text" name="name" placeholder="Your Name" required />
+    <input type="email" name="email" placeholder="Your Email" required />
+    <textarea name="message" placeholder="Your Message" required></textarea>
+    <button type="submit" class="btn btn-submit">Submit</button>
+  </form>
+  <p class="contact-info"><i class="fa fa-paper-plane"></i> segunstar@gmail.com</p>
+</section>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast" aria-live="polite"></div>
+<footer class="footer-section">
+            <div class="section-content">
+                <p class="copyright-text"> 2025 color palette</p>
+                <div class="social-link-list">
+                    <a href="#" class="social-link"><i class="fa-brands fa-facebook"></i></a>
+                    <a href="#" class="social-link"><i class="fa-brands fa-instagram"></i></a>
+                    <a href="#" class="social-link"><i class="fa-brands fa-x-twitter"></i></a>
+                </div>
+                <p class="policy-text"><a href="#" class="policy-link">privacy policy</a></p>
+                <span class="separator">•</span>
+                <p class="policy-text"><a href="#" class="policy-link">refund policy</a></p>
+            </div>
+        </footer>
+  </main>
+
+
+  <!-- script -->
   <script src="script.js"></script>
 </body>
 </html>
