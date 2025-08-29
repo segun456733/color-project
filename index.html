@@ -299,11 +299,8 @@
               <div id="cb_grid" class="color-blind-grid"></div>
             </div>
           </div>
-      <!-- =========================================================================
-     Image Extractor Section
-     ========================================================================= -->
-<section id="image_extractor">
-  <h2> Image Color Extractor</h2>
+        <section id="image_extractor">
+  <h2>Image Color Extractor</h2>
 
   <!-- Upload input -->
   <input type="file" id="img_input" accept="image/*">
@@ -323,40 +320,10 @@
     <button id="ex_copy">Copy Xcode Colors</button>
     <button id="ex_download">Download Palette</button>
   </div>
+
+  <!-- Hidden canvas for processing -->
+  <canvas id="extract_canvas" style="display:none;"></canvas>
 </section>
-
-<!-- Hidden canvas (for processing) -->
-<canvas id="extract_canvas" style="display:none;"></canvas>
-
-
-          <!-- Tab: Shades & Tints -->
-          <div id="tab-shades" class="tab-panel">
-            <div class="tool-card">
-              <h3>Shades & Tints Generator</h3>
-              <label>Base <input type="color" id="sh_base" value="#ff6600"></label>
-              <button id="sh_generate" class="btn2">Generate Shades/Tints</button>
-              <div id="sh_grid" class="shades-grid"></div>
-            </div>
-          </div>
-
-          <!-- Tab: Export -->
-          <div id="tab-export" class="tab-panel">
-            <div class="tool-card">
-              <h3>Export</h3>
-              <p>Download current palette / gradient or export as JSON.</p>
-              <div class="cw-row">
-                <button id="export_palette" class="btn2">Download Palette (.txt)</button>
-                <button id="export_json" class="btn2">Export JSON</button>
-                <button id="export_grad_img" class="btn2">Download Gradient (PNG)</button>
-              </div>
-            </div>
-          </div>
-
-        </div>
-      </div>
-    </section>
-    
-
 
 <!-- Toast Notification -->
 <section id="contact" class="contact">

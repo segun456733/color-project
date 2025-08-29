@@ -323,6 +323,180 @@ function updateBlindness(){
 $('#cb_text')?.addEventListener('input', updateBlindness);
 $('#cb_bg')?.addEventListener('input', updateBlindness);
 updateBlindness();
+// ----- Image Extractor: Top 10 Dominant Colors -----
+const imgInput = document.getElementById('img_input');
+const imgPreview = document.getElementById('img_preview');
+const imgToggle = document.getElementById('img_toggle');
+const extractedColors = document.getElementById('extracted_colors');
+const copyBtn = document.getElementById('ex_copy');
+const downloadBtn = document.getElementById('ex_download');
+const canvas = document.getElementById('extract_canvas');
+const ctx = canvas.getContext('2d');
+
+let colors = [];
+
+// Upload image & preview
+imgInput.addEventListener('change', e => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+        imgPreview.src = reader.result;
+        imgPreview.style.display = 'block';
+        imgToggle.style.display = 'inline-block';
+        imgPreview.onload = () => extractColors(imgPreview);
+    };
+    reader.readAsDataURL(file);
+});
+
+// Toggle show/hide image
+imgToggle.addEventListener('click', () => {
+    if (imgPreview.style.display === 'none') {
+        imgPreview.style.display = 'block';
+        imgToggle.textContent = 'Hide Image';
+    } else {
+        imgPreview.style.display = 'none';
+        imgToggle.textContent = 'Show Image';
+    }
+});
+
+// Extract top 10 dominant colors
+function extractColors(image) {
+    // Downscale for performance
+    const width = 100;
+    const height = 100;
+    canvas.width = width;
+    canvas.height = height;
+    ctx.drawImage(image, 0, 0, width, height);
+
+    const data = ctx.getImageData(0, 0, width, height).data;
+    const colorMap = {};
+
+    // Count pixel colors
+    for (let i = 0; i < data.length; i += 4) {
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
+        const a = data[i + 3];
+
+        // Skip transparent pixels
+        if (a < 128) continue;
+
+        const hex = rgbToHex(r, g, b);
+        colorMap[hex] = (colorMap[hex] || 0) + 1;
+    }
+
+    // Sort colors by frequency
+    let sortedColors = Object.entries(colorMap)
+        .map(([hex, count]) => ({ hex, count }))
+        .sort((a, b) => b.count - a.count)
+        .map(c => c.hex);
+
+    // Pick top 10 visually distinct colors
+    colors = pickDistinctColors(sortedColors, 10);
+
+    displayColors();
+}
+
+// Convert RGB to HEX
+function rgbToHex(r, g, b) {
+    return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
+}
+
+// Pick visually distinct colors from sorted array
+function pickDistinctColors(colorArray, count) {
+    const distinct = [];
+    const distance = (c1, c2) => {
+        const rgb1 = hexToRgb(c1);
+        const rgb2 = hexToRgb(c2);
+        return Math.sqrt(
+            Math.pow(rgb1.r - rgb2.r, 2) +
+            Math.pow(rgb1.g - rgb2.g, 2) +
+            Math.pow(rgb1.b - rgb2.b, 2)
+        );
+    };
+
+    for (let color of colorArray) {
+        if (distinct.length === 0) {
+            distinct.push(color);
+            continue;
+        }
+        const isDistinct = distinct.every(c => distance(c, color) > 30); // tweak threshold
+        if (isDistinct) distinct.push(color);
+        if (distinct.length >= count) break;
+    }
+
+    // If less than desired count, fill with next most frequent colors
+    let i = 0;
+    while (distinct.length < count && i < colorArray.length) {
+        if (!distinct.includes(colorArray[i])) distinct.push(colorArray[i]);
+        i++;
+    }
+
+    return distinct;
+}
+
+// Convert HEX to RGB
+function hexToRgb(hex) {
+    hex = hex.replace('#', '');
+    return {
+        r: parseInt(hex.substring(0, 2), 16),
+        g: parseInt(hex.substring(2, 4), 16),
+        b: parseInt(hex.substring(4, 6), 16)
+    };
+}
+
+// Display extracted colors
+function displayColors() {
+    extractedColors.innerHTML = '';
+    colors.forEach((color, i) => {
+        const box = document.createElement('div');
+        box.className = 'shade-box';
+        box.style.background = color;
+        box.setAttribute('data-color', color);
+        extractedColors.appendChild(box);
+
+        // Animate fadeSlideUp
+        setTimeout(() => {
+            box.style.opacity = 1;
+            box.style.transform = 'translateY(0)';
+        }, i * 50);
+    });
+}
+
+// Copy colors as text
+copyBtn.addEventListener('click', () => {
+    if (colors.length === 0) return;
+    navigator.clipboard.writeText(colors.join(', '));
+    showToast('Colors copied!');
+});
+
+// Download palette as PNG
+downloadBtn.addEventListener('click', () => {
+    if (colors.length === 0) return;
+    const size = 100;
+    canvas.width = size * colors.length;
+    canvas.height = size;
+
+    colors.forEach((color, i) => {
+        ctx.fillStyle = color;
+        ctx.fillRect(i * size, 0, size, size);
+    });
+
+    const link = document.createElement('a');
+    link.href = canvas.toDataURL('image/png');
+    link.download = 'palette.png';
+    link.click();
+});
+
+// Toast helper
+function showToast(msg) {
+    const toast = document.getElementById('toast');
+    toast.textContent = msg;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), 1800);
+}
 
 
 /* ---------- Export palette TXT / JSON ---------- */
