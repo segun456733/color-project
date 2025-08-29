@@ -1,0 +1,156 @@
+body {
+  font-family: 'Poppins', sans-serif;
+  background: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  color: #333;
+}
+
+.cg-header {
+  text-align: center;
+  padding: 20px;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.cg-timeline {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  margin: 20px 0;
+}
+
+.cg-decade-btn {
+  padding: 8px 16px;
+  border: none;
+  background: #ddd;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: all 0.2s ease;
+}
+
+.cg-decade-btn.active,
+.cg-decade-btn:hover {
+  background: #03a9f4;
+  color: #fff;
+}
+
+.cg-container {
+  max-width: 900px;
+  margin: 0 auto 50px auto;
+  background: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
+.cg-text h2 {
+  margin-top: 0;
+}
+
+.cg-swatches {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 15px 0;
+}
+
+.cg-swatch {
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+  cursor: pointer;
+  border: 2px solid #fff;
+  box-shadow: 0 0 3px rgba(0,0,0,0.2);
+  position: relative;
+  transition: transform 0.2s ease;
+}
+
+.cg-swatch:hover {
+  transform: scale(1.2);
+  border: 2px solid #333;
+}
+
+.cg-swatch::after {
+  content: attr(title);
+  position: absolute;
+  bottom: 110%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0,0,0,0.7);
+  color: #fff;
+  padding: 3px 6px;
+  font-size: 12px;
+  border-radius: 4px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+  white-space: nowrap;
+}
+
+.cg-swatch:hover::after {
+  opacity: 1;
+}
+
+.cg-gradient {
+  margin: 20px 0;
+}
+
+.cg-gradient-preview {
+  width: 100%;
+  height: 80px;
+  border-radius: 8px;
+  background: linear-gradient(to right, #03a9f4, #f441a5);
+  transition: background 0.5s ease;
+}
+
+.cg-tree {
+  margin: 20px 0;
+}
+
+.cg-color-tree {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.cg-tree-node {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  cursor: pointer;
+  position: relative;
+  border: 2px solid #fff;
+  box-shadow: 0 0 3px rgba(0,0,0,0.2);
+  transition: transform 0.2s ease;
+}
+
+.cg-tree-node:hover {
+  transform: scale(1.2);
+}
+
+.cg-usage ul {
+  list-style: disc;
+  margin-left: 20px;
+}
+
+.cg-nav {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px;
+}
+
+.cg-nav button {
+  padding: 10px 20px;
+  border: none;
+  background: #03a9f4;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: all 0.2s ease;
+}
+
+.cg-nav button:hover {
+  background: #0288d1;
+}

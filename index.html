@@ -32,6 +32,8 @@
         <li><a href="#generator">Generator</a></li>
         <li><a href="#tools">Tools</a></li>
         <li><a href="#extra-tools">Extra</a></li>
+        <li><a href="color-guide.html">Color Guide</a></li>
+
         <li><a href="#contact">Contact</a></li>
       </ul>
       <button id="menuToggle"><i class="fa fa-bars"></i></button>
@@ -60,14 +62,25 @@
           <div class="colors"><div class="color-image" style="background:#5ce3ff"></div></div>
           <div class="colors"><div class="color-image" style="background:#fe1725"></div></div>
           <div class="colors"><div class="color-image" style="background:#3051b9"></div></div>
-          <div class="colors"><div class="color-image" style="background:#b9ecac"></div></div>
+          <div class="colors"><div class="color-image" style="background: linear-gradient(164deg, rgb(46, 247, 179), rgb(244, 65, 165));"></div></div>
           <div class="colors"><div class="color-image" style="background:#d91e9c"></div></div>
-          <div class="colors"><div class="color-image" style="background:#ff852e"></div></div>
+          <div class="colors"><div class="color-image" style="background: linear-gradient(164deg, rgb(46, 247, 179), rgb(248, 226, 40));"></div></div>
           <div class="colors"><div class="color-image" style="background:#f1e851"></div></div>
           <div class="colors"><div class="color-image" style="background:#49eeb5"></div></div>
           <div class="colors"><div class="color-image" style="background:#20c551"></div></div>
           <div class="colors"><div class="color-image" style="background:#c6a26b"></div></div>
           <div class="colors"><div class="color-image" style="background:#fb6bcd"></div></div>
+          <div class="colors"><div class="color-image" style="background:#ff852e"></div></div>
+          <div class="colors"><div class="color-image" style="background: linear-gradient(164deg, rgb(242, 193, 20), rgb(244, 65, 165));"></div></div>
+          <div class="colors"><div class="color-image" style="background: linear-gradient(164deg, rgb(38, 108, 197), rgb(118, 168, 218));"></div></div>
+          <div class="colors"><div class="color-image" style="background: linear-gradient(164deg, rgb(209, 146, 227), rgb(118, 168, 218));"></div></div>
+          <div class="colors"><div class="color-image" style="background: linear-gradient(164deg, rgb(209, 146, 227), rgb(235, 42, 54));"></div></div>
+          <div class="colors"><div class="color-image" style="background: linear-gradient(164deg, rgb(242, 203, 15), rgb(235, 42, 54));"></div></div>
+          <div class="colors"><div class="color-image" style="background:#CEE8EA"></div></div>
+          <div class="colors"><div class="color-image" style="background: linear-gradient(164deg, rgb(46, 247, 179), rgb(248, 226, 40));"></div></div>
+          <div class="colors"><div class="color-image" style="background:#f1e851"></div></div>
+          <div class="colors"><div class="color-image" style="background:#49eeb5"></div></div>
+          <div class="colors"><div class="color-image" style="background:#20c551"></div></div>
         </div>
       </div>
     </section>
@@ -87,6 +100,16 @@
       <div class="controls">
         <button id="generate-btn" class="btn">Generate Palette</button>
         <p class="hint">Or press <b>Spacebar</b></p>
+        
+  <!-- Live Preview -->
+  <div id="live-preview" class="live-preview">
+    <p>Live Preview</p>
+  </div>
+  <div id="contrast-checker">
+  <h3>Contrast Checker</h3>
+  <p id="contrast-result">Click a color to test contrast...</p>
+</div>
+
       </div>
     </section>
 
@@ -151,9 +174,7 @@
     </a>
 
     <!-- Adobe XD -->
-    <a href="https://www.adobe.com/products/xd.html" target="_blank" title="Adobe XD">
-      <i class="fab fa-adobe"></i>
-    </a>
+    
 
     <!-- VS Code -->
     <a href="https://code.visualstudio.com" target="_blank" title="Visual Studio Code">
@@ -186,10 +207,7 @@
     </a>
 
     <!-- MDN Web Docs -->
-    <a href="https://developer.mozilla.org" target="_blank" title="MDN Web Docs">
-      <i class="fab fa-mdn"></i>
-    </a>
-
+    
     <!-- WCAG -->
     <a href="https://www.w3.org/WAI/WCAG21/quickref/" target="_blank" title="WCAG Guidelines">
       <i class="fas fa-universal-access"></i>
@@ -281,20 +299,35 @@
               <div id="cb_grid" class="color-blind-grid"></div>
             </div>
           </div>
+      <!-- =========================================================================
+     Image Extractor Section
+     ========================================================================= -->
+<section id="image_extractor">
+  <h2> Image Color Extractor</h2>
 
-          <!-- Tab: Image Extractor -->
-          <div id="tab-extract" class="tab-panel">
-            <div class="tool-card">
-              <h3>Image Color Extractor</h3>
-              <input type="file" id="img_input" accept="image/*" />
-              <canvas id="extract_canvas" style="display:none"></canvas>
-              <div id="extracted_colors" class="extracted-grid"></div>
-              <div class="cw-row">
-                <button id="ex_copy" class="btn2">Copy Palette</button>
-                <button id="ex_download" class="btn2">Download Palette</button>
-              </div>
-            </div>
-          </div>
+  <!-- Upload input -->
+  <input type="file" id="img_input" accept="image/*">
+  <label for="img_input">Upload Image</label>
+
+  <!-- Image toggle button -->
+  <button id="img_toggle">Hide Image</button>
+
+  <!-- Image preview -->
+  <img id="img_preview" alt="Uploaded preview">
+
+  <!-- Extracted colors -->
+  <div id="extracted_colors"></div>
+
+  <!-- Action buttons -->
+  <div>
+    <button id="ex_copy">Copy Xcode Colors</button>
+    <button id="ex_download">Download Palette</button>
+  </div>
+</section>
+
+<!-- Hidden canvas (for processing) -->
+<canvas id="extract_canvas" style="display:none;"></canvas>
+
 
           <!-- Tab: Shades & Tints -->
           <div id="tab-shades" class="tab-panel">
@@ -322,6 +355,7 @@
         </div>
       </div>
     </section>
+    
 
 
 <!-- Toast Notification -->
@@ -336,6 +370,7 @@
   <p class="contact-info"><i class="fa fa-paper-plane"></i> segunstar@gmail.com</p>
 </section>
 
+
 <!-- Toast Notification -->
 <div id="toast" class="toast" aria-live="polite"></div>
 <footer class="footer-section">
@@ -346,15 +381,46 @@
                     <a href="#" class="social-link"><i class="fa-brands fa-instagram"></i></a>
                     <a href="#" class="social-link"><i class="fa-brands fa-x-twitter"></i></a>
                 </div>
-                <p class="policy-text"><a href="#" class="policy-link">privacy policy</a></p>
-                <span class="separator">•</span>
-                <p class="policy-text"><a href="#" class="policy-link">refund policy</a></p>
+      
             </div>
         </footer>
+       
+
+        <!-- Floating Help Button -->
+<button id="open-help" class="help-floating-btn">❓ Help</button>
+
+<!-- Help Overlay -->
+<div id="help-overlay" class="help-overlay">
+  <div class="help-box">
+    <!-- Close Button -->
+    <span id="close-help" class="help-close">&times;</span>
+
+    <!-- Icon -->
+    <div class="help-icon" id="help-icon">🎨</div>
+
+    <!-- Step Content -->
+    <h2 id="help-title">Welcome</h2>
+    <p id="help-text">This is your full guide to Color World!</p>
+
+    <!-- Navigation -->
+    <div class="help-nav">
+      <button id="prev-step" class="help-btn">⟵ Previous</button>
+      <button id="next-step" class="help-btn primary">Next ⟶</button>
+    </div>
+  </div>
+</div>
+
+        
   </main>
 
 
+
   <!-- script -->
+  
+    
+  
+
+  
   <script src="script.js"></script>
 </body>
 </html>

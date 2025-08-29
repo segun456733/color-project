@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Guide | Color World</title>
+  <link rel="stylesheet" href="color-guide.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+</head>
+<body>
+
+  <header class="cg-header">
+    <h1>Color Guide</h1>
+    <p>Learn color history, combinations, and best practices for design</p>
+  </header>
+
+  <!-- Timeline / Decade Selector -->
+  <div class="cg-timeline">
+    <button class="cg-decade-btn active" data-index="0">1990s</button>
+    <button class="cg-decade-btn" data-index="1">2000s</button>
+    <button class="cg-decade-btn" data-index="2">2010s</button>
+    <button class="cg-decade-btn" data-index="3">2020s</button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="cg-container">
+    <div class="cg-text">
+      <h2 id="cg-title">Title</h2>
+      <p id="cg-description">Description</p>
+    </div>
+
+    <!-- Swatches -->
+    <div class="cg-swatches" id="cg-swatches"></div>
+
+    <!-- Gradient Preview -->
+    <div class="cg-gradient">
+      <h3>Gradient Preview</h3>
+      <div id="cg-gradient-preview" class="cg-gradient-preview"></div>
+    </div>
+
+    <!-- Color Tree -->
+    <div class="cg-tree">
+      <h3>Color Tree</h3>
+      <div id="cg-color-tree" class="cg-color-tree"></div>
+    </div>
+
+    <!-- Recommended Usage -->
+    <div class="cg-usage">
+      <h3>Usage Tips</h3>
+      <ul id="cg-usage-list"></ul>
+    </div>
+
+    <!-- Navigation -->
+    <div class="cg-nav">
+      <button id="cg-prev"><i class="fa fa-arrow-left"></i> Previous</button>
+      <button id="cg-next">Next <i class="fa fa-arrow-right"></i></button>
+    </div>
+  </div>
+
+  <script src="color-guide.js"></script>
+</body>
+</html>

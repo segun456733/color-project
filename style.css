@@ -84,7 +84,7 @@ section { min-height:100vh; padding:120px 20px 60px; display:flex; flex-directio
 
 /* Tools */
 .tools { padding:60px 20px; width:100%; background:#111; color:#fff; text-align:center; }
-.tool-box { max-width:1100px; width:100%; margin-top:18px; display:grid; grid-template-columns: repeat(auto-fit, minmax(300px,1fr)); gap:18px; }
+.tool-box { max-width:1100px; width:100%; margin-top:18px; display:grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap:18px; }
 .tool { background:#1e1e1e; padding:18px; border-radius:12px; text-align:left; }
 .inline-controls { display:flex; gap:12px; align-items:center; flex-wrap:wrap; }
 .swatch { display:flex; flex-direction:column; gap:8px; }
@@ -154,7 +154,8 @@ section { min-height:100vh; padding:120px 20px 60px; display:flex; flex-directio
     background: #333;
     flex-direction: column;
     gap: 30px;
-    align-items: flex-start;
+    align-items:center;
+    justify-content: center;
     padding: 100px 20px 20px;
     transition: right .3s ease;
   }
@@ -472,3 +473,522 @@ section { min-height:100vh; padding:120px 20px 60px; display:flex; flex-directio
         color: var(--white-color);
 
       }
+      /* Live Preview */
+.live-preview {
+  margin-top: 1rem;
+  padding: 1rem;
+  background-color: #fff;
+  border-radius: 8px;
+  text-align: center;
+  color: #000;
+  font-weight: bold;
+  transition: background-color 0.5s, color 0.5s;
+}
+
+/* Drag & Drop visual */
+.color-box.dragging {
+  opacity: 0.5;
+  transform: scale(1.05);
+  border: 2px dashed #3498db;
+  cursor: grabbing;
+}
+/*#live-preview {
+  margin-top: 1rem;
+  padding: 0.5rem;
+  background: #f5f5f5;
+  border-radius: 8px;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  gap: 4px;
+}*/
+#live-preview div {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+#live-preview div:hover {
+  transform: scale(1.1);
+}
+/* Help Overlay */
+.help-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  padding: 2rem;
+  overflow-y: auto;
+}
+
+.help-overlay.hidden { display: none; }
+
+/* Help Content */
+.help-content {
+  background: #fff;
+  border-radius: 12px;
+  max-width: 800px;
+  width: 100%;
+  padding: 2rem;
+  text-align: center;
+  position: relative;
+  flex-wrap: wrap;
+}
+
+.help-step { display: none; }
+.help-step.active { display: block; }
+
+/* Navigation Buttons */
+.help-navigation {
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.help-navigation button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+  background: #3498db;
+  color: #fff;
+  transition: background 0.3s;
+}
+
+.help-navigation button:disabled {
+  background: #aaa;
+  cursor: default;
+}
+
+.help-navigation button:hover:not(:disabled) {
+  background: #2980b9;
+}
+
+/* Animations */
+.animation-box { margin: 1rem auto; height: 120px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-weight: bold; color: #fff; }
+.picker-animation { background: linear-gradient(90deg,#ff9a9e,#fad0c4); animation: colorCycle 4s infinite alternate; }
+.palette-animation { background: linear-gradient(90deg,#6a11cb,#2575fc); animation: pulse 3s infinite alternate; }
+.contrast-animation { background: #000; }
+.contrast-animation .text-sample { padding: 10px 20px; background-color: #fff; color: #000; border-radius: 6px; transition: color 1s, background-color 1s; }
+.tab-animation, .tools-animation { background: #e67e22; animation: pulse 2s infinite alternate; }
+
+@keyframes colorCycle { 0% {background-position:0% 50%} 50% {background-position:100% 50%} 100% {background-position:0% 50%} }
+@keyframes pulse { 0% {transform: scale(1);} 100% {transform: scale(1.05);} }
+
+kbd { background:#eee; border-radius:3px; padding:2px 6px; font-size:0.9rem; }
+
+/* Dynamic Highlight */
+.highlight-overlay {
+  position: absolute;
+  border: 3px solid #3498db;
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: 10000;
+  box-shadow: 0 0 15px rgba(52,152,219,0.7);
+}
+
+.highlight-tooltip {
+  position: absolute;
+  background: #3498db;
+  color: #fff;
+  padding: 5px 10px;
+  border-radius: 6px;
+  font-size: 0.9rem;
+  z-index: 10001;
+  pointer-events: none;
+}
+/* Help Button */
+.help-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #3498db;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 1.5rem;
+  cursor: pointer;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 0 15px rgba(52, 152, 219, 0.5);
+  animation: pulse 2s infinite alternate;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); box-shadow: 0 0 15px rgba(52, 152, 219, 0.5); }
+  100% { transform: scale(1.1); box-shadow: 0 0 25px rgba(52, 152, 219, 0.7); }
+}
+#live-preview div {
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+#live-preview div:hover {
+  transform: scale(1.1);
+}
+.color-box.dragging {
+  opacity: 0.4;
+  border: 2px dashed #333;
+}
+/* Lock icon inside color box */
+.color-box { position: relative; overflow: hidden; }
+.color-box .lock-toggle {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  user-select: none;
+  background: rgba(255,255,255,0.06);
+  padding: 2px 6px;
+  border-radius: 6px;
+  transition: transform .12s;
+}
+.color-box .lock-toggle:hover { transform: scale(1.07); }
+
+/* Delete / replace button */
+.color-box .delete-btn {
+  position: absolute;
+  top: 6px;
+  left: 6px;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.45);
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  line-height: 20px;
+  text-align: center;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.color-box .delete-btn:hover { transform: scale(1.06); }
+
+/* Locked state visuals */
+.color-box.locked { outline: 3px solid rgba(0,0,0,0.12); box-shadow: 0 0 0 3px rgba(108,99,255,0.12) inset; }
+.color-box.locked .lock-toggle { background: rgba(255,255,255,0.12); }
+
+/* Small popped animation */
+.color-box.popped { transform: scale(0.98); transition: transform .12s; }
+
+/* Toast (if you don't have one already) */
+#toast {
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 22px;
+  background:      rgba(0,0,0,0.8);
+  color: #fff;
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 13px;
+  z-index: 99999;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity .18s;
+}
+#toast.show { opacity: 1; pointer-events: auto; }
+/* =========================================================================
+   Image Extractor Styles
+   ========================================================================= */
+
+/* Container */
+#image_extractor {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  border-radius: 1rem;
+  background: #fafafa;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.08);
+  text-align: center;
+  font-family: system-ui, sans-serif;
+}
+
+/* Upload input */
+#img_input {
+  display: none;
+}
+
+#img_input + label {
+  display: inline-block;
+  padding: 0.75rem 1.25rem;
+  background: #4f46e5;
+  color: #fff;
+  border-radius: 0.75rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: background 0.2s ease;
+  margin-bottom: 1rem;
+}
+
+#img_input + label:hover {
+  background: #4338ca;
+}
+
+/* Image preview */
+#img_preview {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.75rem;
+  margin: 1rem auto;
+  display: none;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+/* Toggle button */
+#img_toggle {
+  display: none;
+  margin-bottom: 1rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: #10b981;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#img_toggle:hover {
+  background: #059669;
+}
+
+/* Extracted colors grid */
+#extracted_colors {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+/* Extracted colors grid - styled as cards */
+#extracted_colors {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 1.2rem;
+  margin-top: 1.5rem;
+  padding: 0.5rem;
+}
+
+/* Each extracted color card */
+#extracted_colors .shade-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;  /* stack text/icon nicely */
+  padding: 1.5rem;
+  border-radius: 1rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  user-select: none;
+  text-align: center;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  min-height: 100px;
+
+  /* add subtle shadow for card effect */
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Hover animation */
+#extracted_colors .shade-box:hover {
+  transform: scale(1.08) translateY(-4px);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+  cursor: pointer;
+}
+
+/* Optional: Show hex value as a tag */
+#extracted_colors .shade-box::after {
+  content: attr(data-color);
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  background: rgba(255,255,255,0.7);
+  color: #000;
+  padding: 2px 6px;
+  border-radius: 6px;
+  display: inline-block;
+}
+
+
+/* Color box */
+.shade-box {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  border-radius: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  user-select: none;
+  text-align: center;
+  font-size: 0.85rem;
+  letter-spacing: 0.5px;
+  min-height: 80px;
+}
+
+/* Copy + download buttons */
+#ex_copy, #ex_download {
+  display: inline-block;
+  margin: 1rem 0.5rem 0;
+  padding: 0.6rem 1.2rem;
+  border: none;
+  border-radius: 0.5rem;
+  background: #2563eb;
+  color: white;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+#ex_copy:hover, #ex_download:hover {
+  background: #1e40af;
+}
+/* Floating Help Button */
+.help-floating-btn {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: #6c63ff;
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+  font-size: 22px;
+  cursor: pointer;
+  box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+  transition: transform 0.2s;
+  z-index: 1000;
+}
+.help-floating-btn:hover {
+  transform: scale(1.1);
+}
+
+/* Overlay */
+.help-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
+}
+.help-overlay.show {
+  display: flex;
+  animation: fadeIn 0.3s ease;
+}
+
+/* Help Box */
+.help-box {
+  background: #fff;
+  padding: 25px 30px;
+  border-radius: 16px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  animation: slideUp 0.4s ease;
+}
+/* Background glow for the help box */
+.help-box {
+  position: relative;
+  overflow: hidden;
+}
+
+.help-box::before {
+  content: "";
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at center, rgba(108,99,255,0.3), transparent 70%);
+  transform: scale(1);
+  transition: background 0.5s ease;
+  z-index: 0;
+}
+
+.help-box * {
+  position: relative;
+  z-index: 1; /* Keep content above glow */
+}
+
+
+/* Close Button */
+.help-close {
+  position: absolute;
+  top: 12px;
+  right: 15px;
+  font-size: 26px;
+  cursor: pointer;
+  color: #555;
+  transition: 0.2s;
+}
+.help-close:hover {
+  color: #111;
+}
+
+/* Icon Section */
+.help-icon {
+  font-size: 50px;
+  margin-bottom: 15px;
+  animation: bounce 1.5s infinite;
+}
+
+/* Nav Buttons */
+.help-nav {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+}
+.help-btn {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: none;
+  background: #ddd;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+.help-btn:hover {
+  background: #ccc;
+}
+.help-btn.primary {
+  background: #6c63ff;
+  color: #fff;
+}
+.help-btn.primary:hover {
+  background: #5145cd;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(40px); opacity: 0; }
+  to   { transform: translateY(0); opacity: 1; }
+}
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
