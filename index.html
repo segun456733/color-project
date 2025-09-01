@@ -299,30 +299,65 @@
               <div id="cb_grid" class="color-blind-grid"></div>
             </div>
           </div>
-        <section id="image_extractor">
-  <h2>Image Color Extractor</h2>
+    <!-- ================================
+     IMAGE EXTRACTOR + BACKGROUND REMOVER
+================================ -->
+<section class="tools-container">
+  <!-- IMAGE EXTRACTOR -->
+  <div class="tool" id="image_extractor">
+    <h2>🎨 Image Color Extractor</h2>
 
-  <!-- Upload input -->
-  <input type="file" id="img_input" accept="image/*">
-  <label for="img_input">Upload Image</label>
+    <input type="file" id="img_input" accept="image/*">
+    <label for="img_input" class="upload-btn">Upload Image</label>
 
-  <!-- Image toggle button -->
-  <button id="img_toggle">Hide Image</button>
+    <button id="img_toggle">Hide Image</button>
 
-  <!-- Image preview -->
-  <img id="img_preview" alt="Uploaded preview">
+    <div class="preview-container">
+      <img id="img_preview" alt="Uploaded preview">
+    </div>
 
-  <!-- Extracted colors -->
-  <div id="extracted_colors"></div>
+    <div id="extracted_colors"></div>
 
-  <!-- Action buttons -->
-  <div>
-    <button id="ex_copy">Copy Xcode Colors</button>
-    <button id="ex_download">Download Palette</button>
+    <div class="actions">
+      <button id="ex_copy">Copy Xcode Colors</button>
+      <button id="ex_download">Download Palette</button>
+    </div>
+
+    <canvas id="extract_canvas" style="display:none;"></canvas>
   </div>
 
-  <!-- Hidden canvas for processing -->
-  <canvas id="extract_canvas" style="display:none;"></canvas>
+  <!-- BACKGROUND REMOVER -->
+  <div class="tool" id="background_remover">
+    <h2>🖼️ Background Remover</h2>
+
+    <!-- Remove button -->
+    <button id="remove_bg_btn" class="primary-btn">Remove Background</button>
+
+    <!-- Canvas preview -->
+    <div class="canvas-wrapper">
+      <canvas id="bg_canvas"></canvas>
+      <!-- Floating download icon -->
+      <button id="download_bg_removed" class="download-icon" title="Download">
+        ⬇️
+      </button>
+    </div>
+
+    <!-- Tools -->
+    <div class="tools-panel">
+      <button id="eraser_btn">Start Eraser</button>
+      
+      <button id="undo_btn">Undo</button>
+      <button id="redo_btn">Redo</button>
+
+      <div class="slider-group">
+        <label for="eraser_size">🖌 Size</label>
+        <input type="range" id="eraser_size" min="5" max="100" value="20">
+      </div>
+    </div>
+  </div>
+  <!-- Notification Container -->
+<div id="notification-container" class="notification-container"></div>
+
 </section>
 
 <!-- Toast Notification -->

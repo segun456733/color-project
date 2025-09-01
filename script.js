@@ -1696,6 +1696,282 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 });
+/* =========================================================================
+   Background Remover - Complete JS
+   Features:
+   - Shared #img_input with Image Extractor
+   - API remove.bg background removal
+   - Draggable circular eraser (smooth follow)
+   - Undo / Redo
+   - Download
+   - Adjustable eraser size
+   - Notifications integrated with showNotification()
+   ========================================================================= */
+
+const REMOVE_BG_API_KEY = ""; // <-- Paste your remove.bg API key here
+
+// DOM Elements
+const imgInput = document.getElementById("img_input");
+const bgCanvas = document.getElementById("bg_canvas");
+const ctx = bgCanvas.getContext("2d");
+
+const removeBgBtn = document.getElementById("remove_bg_btn");
+const eraserToggleBtn = document.getElementById("eraser_btn"); 
+const undoBtn = document.getElementById("undo_btn");
+const redoBtn = document.getElementById("redo_btn");
+const downloadBtn = document.getElementById("download_bg_removed");
+const eraserSizeInput = document.getElementById("eraser_size");
+
+// State
+let currentFile = null;
+let originalImg = null;
+let drawing = false;
+let eraserActive = false;
+let eraserSize = parseInt(eraserSizeInput.value, 10);
+let mousePos = { x: 0, y: 0 };
+let history = [];
+let redoStack = [];
+
+/* -------------------- Checkerboard Background -------------------- */
+function drawCheckerboard() {
+  const size = 20;
+  for (let y = 0; y < bgCanvas.height; y += size) {
+    for (let x = 0; x < bgCanvas.width; x += size) {
+      ctx.fillStyle = (x / size + y / size) % 2 === 0 ? "#eee" : "#ccc";
+      ctx.fillRect(x, y, size, size);
+    }
+  }
+}
+
+/* -------------------- Save / Load State -------------------- */
+function saveState() {
+  history.push(bgCanvas.toDataURL());
+  redoStack = [];
+}
+
+function loadState(dataUrl) {
+  const img = new Image();
+  img.onload = () => {
+    drawCheckerboard();
+    ctx.drawImage(img, 0, 0);
+  };
+  img.src = dataUrl;
+}
+
+/* -------------------- Load Image -------------------- */
+function loadImageToCanvas(file) {
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const img = new Image();
+    img.onload = () => {
+      bgCanvas.width = img.width;
+      bgCanvas.height = img.height;
+      drawCheckerboard();
+      ctx.drawImage(img, 0, 0);
+      originalImg = img;
+      saveState();
+    };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* -------------------- Background Removal API -------------------- */
+let bgOverlay = document.createElement("div");
+bgOverlay.id = "bg_processing_overlay";
+bgOverlay.style.position = "absolute";
+bgOverlay.style.background = "rgba(0,0,0,0.4)";
+bgOverlay.style.display = "none";
+bgOverlay.style.zIndex = "999";
+bgOverlay.style.pointerEvents = "none";
+bgOverlay.style.color = "white";
+bgOverlay.style.fontSize = "20px";
+bgOverlay.style.fontWeight = "bold";
+bgOverlay.style.justifyContent = "center";
+bgOverlay.style.alignItems = "center";
+bgOverlay.style.display = "flex";
+bgOverlay.textContent = "⏳ Processing...";
+document.body.appendChild(bgOverlay);
+
+function updateOverlaySize() {
+  const rect = bgCanvas.getBoundingClientRect();
+  bgOverlay.style.width = rect.width + "px";
+  bgOverlay.style.height = rect.height + "px";
+  bgOverlay.style.left = rect.left + "px";
+  bgOverlay.style.top = rect.top + "px";
+}
+
+function showBgOverlay() {
+  updateOverlaySize();
+  bgOverlay.style.display = "flex";
+}
+
+function hideBgOverlay() {
+  bgOverlay.style.display = "none";
+}
+
+async function tryApiRemoveBg(file) {
+  if (!REMOVE_BG_API_KEY) {
+    showNotification("⚠️ API key not set");
+    return false;
+  }
+
+  showBgOverlay();
+  showNotification("⏳ Removing background...");
+
+  try {
+    const formData = new FormData();
+    formData.append("image_file", file);
+
+    const response = await fetch("https://api.remove.bg/v1.0/removebg", {
+      method: "POST",
+      headers: { "X-Api-Key": REMOVE_BG_API_KEY },
+      body: formData,
+    });
+
+    if (!response.ok) throw new Error("API failed");
+
+    const blob = await response.blob();
+    const img = new Image();
+    img.onload = () => {
+      bgCanvas.width = img.width;
+      bgCanvas.height = img.height;
+      drawCheckerboard();
+      ctx.drawImage(img, 0, 0);
+      saveState();
+      hideBgOverlay();
+      showNotification("✅ Background removed!");
+    };
+    img.src = URL.createObjectURL(blob);
+
+    return true;
+  } catch (err) {
+    hideBgOverlay();
+    showNotification("❌ Background removal failed");
+    console.warn("API error:", err);
+    return false;
+  }
+}
+
+/* -------------------- Eraser -------------------- */
+function toggleEraser() {
+  eraserActive = !eraserActive;
+  if (eraserActive) {
+    eraserToggleBtn.textContent = "Stop Erasing";
+    bgCanvas.style.cursor = "none";
+    bgCanvas.addEventListener("mousedown", startDrawing);
+    bgCanvas.addEventListener("mousemove", updateMouse);
+    bgCanvas.addEventListener("mousemove", drawPreview);
+    bgCanvas.addEventListener("mouseup", stopDrawing);
+    bgCanvas.addEventListener("mouseleave", stopDrawing);
+  } else {
+    eraserToggleBtn.textContent = "Start Erasing";
+    bgCanvas.style.cursor = "default";
+    bgCanvas.removeEventListener("mousedown", startDrawing);
+    bgCanvas.removeEventListener("mousemove", updateMouse);
+    bgCanvas.removeEventListener("mousemove", drawPreview);
+    bgCanvas.removeEventListener("mouseup", stopDrawing);
+    bgCanvas.removeEventListener("mouseleave", stopDrawing);
+    redrawCanvas();
+  }
+}
+
+function updateMouse(e) {
+  const rect = bgCanvas.getBoundingClientRect();
+  mousePos.x = e.clientX - rect.left;
+  mousePos.y = e.clientY - rect.top;
+}
+
+function startDrawing(e) {
+  drawing = true;
+  drawEraser();
+}
+
+function drawEraser() {
+  if (!drawing) return;
+  ctx.save();
+  ctx.globalCompositeOperation = "destination-out";
+  ctx.beginPath();
+  ctx.arc(mousePos.x, mousePos.y, eraserSize / 2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+  requestAnimationFrame(drawEraser); // smooth continuous erasing
+}
+
+function stopDrawing() {
+  if (drawing) {
+    drawing = false;
+    saveState();
+  }
+}
+
+function drawPreview() {
+  if (!eraserActive || drawing || !history.length) return;
+  redrawCanvas();
+  ctx.save();
+  ctx.strokeStyle = "red";
+  ctx.lineWidth = 1;
+  ctx.beginPath();
+  ctx.arc(mousePos.x, mousePos.y, eraserSize / 2, 0, Math.PI * 2);
+  ctx.stroke();
+  ctx.restore();
+}
+
+function redrawCanvas() {
+  if (history.length) loadState(history[history.length - 1]);
+}
+
+/* -------------------- Undo / Redo -------------------- */
+function undo() {
+  if (history.length > 1) {
+    redoStack.push(history.pop());
+    loadState(history[history.length - 1]);
+  }
+}
+
+function redo() {
+  if (redoStack.length > 0) {
+    const data = redoStack.pop();
+    history.push(data);
+    loadState(data);
+  }
+}
+
+/* -------------------- Download -------------------- */
+function downloadImage() {
+  const link = document.createElement("a");
+  link.download = "bg_removed.png";
+  link.href = bgCanvas.toDataURL("image/png");
+  link.click();
+}
+
+/* -------------------- Event Listeners -------------------- */
+eraserToggleBtn.addEventListener("click", toggleEraser);
+undoBtn.addEventListener("click", undo);
+redoBtn.addEventListener("click", redo);
+downloadBtn.addEventListener("click", downloadImage);
+eraserSizeInput.addEventListener("input", (e) => {
+  eraserSize = parseInt(e.target.value, 10);
+});
+
+removeBgBtn.addEventListener("click", async () => {
+  if (!currentFile) return showNotification("⚠️ Upload an image first");
+  await tryApiRemoveBg(currentFile);
+});
+
+imgInput.addEventListener("change", (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  currentFile = file;
+  loadImageToCanvas(file);
+});
+
+/* -------------------- Window resize for overlay -------------------- */
+window.addEventListener("resize", () => {
+  if (bgOverlay.style.display === "flex") {
+    updateOverlaySize();
+  }
+});
 
 
 
