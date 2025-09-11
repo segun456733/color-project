@@ -153,4 +153,23 @@ body {
 
 .cg-nav button:hover {
   background: #0288d1;
+
+}
+.back-button {
+  padding: 10px 20px;
+  border: none;
+  background: #03a9f4;
+  color: #fff;
+  cursor: pointer;
+  border-radius: 5px;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  outline: none;
+  text-decoration: none;
+  margin-top: 15px;
+  margin-left: 1rem;
+}
+.back-button:hover {
+  background: #0288d1;
+
 }

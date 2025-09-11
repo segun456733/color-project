@@ -12,9 +12,15 @@
 
   <!-- your CSS -->
   <link rel="stylesheet" href="style.css" />
+  <!-- Old scripts -->
+
+
+<!-- New advanced contrast checker -->
+<link rel="stylesheet" href="contrast-advanced.css">
+
 </head>
 <body>
-
+  
   <!-- Loading / Splash animation (shows on page load) -->
   <section id="splash" class="splash">
     <div class="splash-inner">
@@ -33,7 +39,8 @@
         <li><a href="#tools">Tools</a></li>
         <li><a href="#extra-tools">Extra</a></li>
         <li><a href="color-guide.html">Color Guide</a></li>
-
+        
+        
         <li><a href="#contact">Contact</a></li>
       </ul>
       <button id="menuToggle"><i class="fa fa-bars"></i></button>
@@ -84,7 +91,7 @@
         </div>
       </div>
     </section>
-
+    
     <!-- Generator (keeps original functions) -->
     <section id="generator" class="generator">
       <h2>Color Palette Generator</h2>
@@ -96,29 +103,25 @@
         <div class="color-box"><span class="copy">#6c63ff</span></div>
         <div class="color-box"><span class="copy">#03a9f4</span></div>
       </div>
-
+      
       <div class="controls">
         <button id="generate-btn" class="btn">Generate Palette</button>
         <p class="hint">Or press <b>Spacebar</b></p>
         
-  <!-- Live Preview -->
-  <div id="live-preview" class="live-preview">
-    <p>Live Preview</p>
-  </div>
-  <div id="contrast-checker">
-  <h3>Contrast Checker</h3>
-  <p id="contrast-result">Click a color to test contrast...</p>
-</div>
-
+        <!-- Live Preview -->
+        <div id="live-preview" class="live-preview">
+          <p>Live Preview</p>
+        </div>
+        
       </div>
     </section>
-
+    
     <!-- Tools (existing ones) -->
     <section id="tools" class="tools">
       <h2>Tools for Designers & Developers</h2>
       <div class="tool-grid">
-
-        <!-- Contrast Checker -->
+        
+        <!-- Contrast Checker
         <div class="tool card-plain">
           <h3>Contrast Checker</h3>
           <div class="inline-controls">
@@ -135,8 +138,8 @@
           </div>
           <p id="contrast-result">Contrast Ratio: –</p>
           <p id="contrast-rating" class="rating">WCAG: –</p>
-        </div>
-
+        </div> -->
+        
         <!-- Gradient Generator -->
         <div class="tool card-plain">
           <h3>Gradient Generator</h3>
@@ -152,119 +155,103 @@
               <label class="mini"><input type="radio" name="gradientTarget" value="gradColor2" /> set from palette</label>
             </div>
           </div>
-
+          
           <label class="angle-row">Angle
             <input type="range" id="gradAngle" min="0" max="360" value="90" />
             <span id="angleVal">90°</span>
           </label>
-
+          
           <div id="gradient-preview" class="gradient-preview"></div>
           <button id="copyGradient" class="small-btn">Copy CSS</button>
         </div>
         <div class="section "id="dev-tools" class="dev-tools">
-        <div class="tool-icons">
-    <!-- Figma -->
-    <a href="https://www.figma.com" target="_blank" title="Figma">
-      <i class="fab fa-figma"></i>
-    </a>
-
-    <!-- Sketch -->
-    <a href="https://www.sketch.com" target="_blank" title="Sketch">
-      <i class="fab fa-sketch"></i>
-    </a>
-
-    <!-- Adobe XD -->
-    
-
-    <!-- VS Code -->
-    <a href="https://code.visualstudio.com" target="_blank" title="Visual Studio Code">
-      <i class="fas fa-code"></i>
-    </a>
-
-    <!-- GitHub -->
-    <a href="https://github.com" target="_blank" title="GitHub">
-      <i class="fab fa-github"></i>
-    </a>
-
-    <!-- Node.js -->
-    <a href="https://nodejs.org/" target="_blank" title="Node.js">
-      <i class="fab fa-node-js"></i>
-    </a>
-
-    <!-- React -->
-    <a href="https://reactjs.org/" target="_blank" title="React">
-      <i class="fab fa-react"></i>
-    </a>
-
-    <!-- NPM -->
-    <a href="https://www.npmjs.com/" target="_blank" title="NPM">
-      <i class="fab fa-npm"></i>
-    </a>
-
-    <!-- Tailwind CSS -->
-    <a href="https://tailwindcss.com/" target="_blank" title="Tailwind CSS">
-      <i class="fas fa-layer-group"></i>
-    </a>
-
-    <!-- MDN Web Docs -->
-    
-    <!-- WCAG -->
-    <a href="https://www.w3.org/WAI/WCAG21/quickref/" target="_blank" title="WCAG Guidelines">
-      <i class="fas fa-universal-access"></i>
-    </a>
-
-    <!-- HTML5 -->
-    <a href="https://developer.mozilla.org/en-US/docs/Web/HTML" target="_blank" title="HTML5">
-      <i class="fab fa-html5"></i>
-    </a>
-
-    <!-- CSS3 -->
-    <a href="https://developer.mozilla.org/en-US/docs/Web/CSS" target="_blank" title="CSS3">
-      <i class="fab fa-css3-alt"></i>
-    </a>
-
-    <!-- JavaScript -->
-    <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" title="JavaScript">
-      <i class="fab fa-js-square"></i>
-    </a>
-  </div>
-</div>
+          <div class="tool-icons">
+            <!-- Figma -->
+            <a href="https://www.figma.com" target="_blank" title="Figma">
+              <i class="fab fa-figma"></i>
+            </a>
+            
+            <!-- Sketch -->
+            <a href="https://www.sketch.com" target="_blank" title="Sketch">
+              <i class="fab fa-sketch"></i>
+            </a>
+            
+            <!-- Adobe XD -->
+            
+            
+            <!-- VS Code -->
+            <a href="https://code.visualstudio.com" target="_blank" title="Visual Studio Code">
+              <i class="fas fa-code"></i>
+            </a>
+            
+            <!-- GitHub -->
+            <a href="https://github.com" target="_blank" title="GitHub">
+              <i class="fab fa-github"></i>
+            </a>
+            
+            <!-- Node.js -->
+            <a href="https://nodejs.org/" target="_blank" title="Node.js">
+              <i class="fab fa-node-js"></i>
+            </a>
+            
+            <!-- React -->
+            <a href="https://reactjs.org/" target="_blank" title="React">
+              <i class="fab fa-react"></i>
+            </a>
+            
+            <!-- NPM -->
+            <a href="https://www.npmjs.com/" target="_blank" title="NPM">
+              <i class="fab fa-npm"></i>
+            </a>
+            
+            <!-- Tailwind CSS -->
+            <a href="https://tailwindcss.com/" target="_blank" title="Tailwind CSS">
+              <i class="fas fa-layer-group"></i>
+            </a>
+            
+            <!-- MDN Web Docs -->
+            
+            <!-- WCAG -->
+            <a href="https://www.w3.org/WAI/WCAG21/quickref/" target="_blank" title="WCAG Guidelines">
+              <i class="fas fa-universal-access"></i>
+            </a>
+            
+            <!-- HTML5 -->
+            <a href="https://developer.mozilla.org/en-US/docs/Web/HTML" target="_blank" title="HTML5">
+              <i class="fab fa-html5"></i>
+            </a>
+            
+            <!-- CSS3 -->
+            <a href="https://developer.mozilla.org/en-US/docs/Web/CSS" target="_blank" title="CSS3">
+              <i class="fab fa-css3-alt"></i>
+            </a>
+            
+            <!-- JavaScript -->
+            <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript" target="_blank" title="JavaScript">
+              <i class="fab fa-js-square"></i>
+            </a>
+          </div>
+        </div>
       </div>
     </section>
-
+    
     <!-- Extra Tools (TABS) -->
     <section id="extra-tools" class="extra-tools">
       <h2>Extra Tools</h2>
-
+      
       <div class="tabs" id="extraTabs">
         <div class="tab-buttons" role="tablist">
           <!--
-          <button class="tab-btn active" data-tab="tab-contrast">Contrast</button>
-          <button class="tab-btn" data-tab="tab-harmony">Harmony</button>
-          <button class="tab-btn" data-tab="tab-blind">Blindness</button>
-          <button class="tab-btn" data-tab="tab-extract">Image Extractor</button>
-          <button class="tab-btn" data-tab="tab-shades">Shades & Tints</button>
-          <button class="tab-btn" data-tab="tab-export">Export</button>
-          -->
-        </div>
-
-        <div class="tab-panels">
-          <!-- Tab: Contrast (duplicate but namespaced to avoid clash) -->
-          <div id="tab-contrast" class="tab-panel active">
-            <div class="tool-card">
-              <h3>Contrast Checker (Extra)</h3>
-              <div class="inline-controls">
-                <label>Color A <input type="color" id="extra_color_a" value="#000000"></label>
-                <label>Color B <input type="color" id="extra_color_b" value="#ffffff"></label>
-              </div>
-              <p id="extra_contrast_result">Contrast Ratio: -</p>
-              <div class="contrast-preview">
-                <div id="extra_preview_a" class="preview-box">Sample Text</div>
-                <div id="extra_preview_b" class="preview-box">Sample Text</div>
-              </div>
-            </div>
+            <button class="tab-btn active" data-tab="tab-contrast">Contrast</button>
+            <button class="tab-btn" data-tab="tab-harmony">Harmony</button>
+            <button class="tab-btn" data-tab="tab-blind">Blindness</button>
+            <button class="tab-btn" data-tab="tab-extract">Image Extractor</button>
+            <button class="tab-btn" data-tab="tab-shades">Shades & Tints</button>
+            <button class="tab-btn" data-tab="tab-export">Export</button>
+            -->
           </div>
-
+          
+          
           <!-- Tab: Harmony -->
           <div id="tab-harmony" class="tab-panel">
             <div class="tool-card">
@@ -286,7 +273,7 @@
               </div>
             </div>
           </div>
-
+          
           <!-- Tab: Blindness -->
           <div id="tab-blind" class="tab-panel">
             <div class="tool-card">
@@ -299,74 +286,117 @@
               <div id="cb_grid" class="color-blind-grid"></div>
             </div>
           </div>
-    <!-- ================================
-     IMAGE EXTRACTOR + BACKGROUND REMOVER
-================================ -->
-<section class="tools-container">
-  <!-- IMAGE EXTRACTOR -->
-  <div class="tool" id="image_extractor">
-    <h2>🎨 Image Color Extractor</h2>
-
-    <input type="file" id="img_input" accept="image/*">
-    <label for="img_input" class="upload-btn">Upload Image</label>
-
-    <button id="img_toggle">Hide Image</button>
-
-    <div class="preview-container">
-      <img id="img_preview" alt="Uploaded preview">
-    </div>
-
-    <div id="extracted_colors"></div>
-
-    <div class="actions">
-      <button id="ex_copy">Copy Xcode Colors</button>
-      <button id="ex_download">Download Palette</button>
-    </div>
-
-    <canvas id="extract_canvas" style="display:none;"></canvas>
-  </div>
-
-  <!-- BACKGROUND REMOVER -->
-  <div class="tool" id="background_remover">
-    <h2>🖼️ Background Remover</h2>
-
-    <!-- Remove button -->
-    <button id="remove_bg_btn" class="primary-btn">Remove Background</button>
-
-    <!-- Canvas preview -->
-    <div class="canvas-wrapper">
-      <canvas id="bg_canvas"></canvas>
-      <!-- Floating download icon -->
-      <button id="download_bg_removed" class="download-icon" title="Download">
-        ⬇️
-      </button>
-    </div>
-
-    <!-- Tools -->
-    <div class="tools-panel">
-      <button id="eraser_btn">Start Eraser</button>
-      
-      <button id="undo_btn">Undo</button>
-      <button id="redo_btn">Redo</button>
-
-      <div class="slider-group">
-        <label for="eraser_size">🖌 Size</label>
-        <input type="range" id="eraser_size" min="5" max="100" value="20">
-      </div>
-    </div>
-  </div>
-  <!-- Notification Container -->
-<div id="notification-container" class="notification-container"></div>
-
-</section>
-
-<!-- Toast Notification -->
-<section id="contact" class="contact">
-  <h2>Feedback</h2>
-  <form id="contactForm" action="https://formspree.io/f/{form_id}" method="post">
-    <input type="text" name="name" placeholder="Your Name" required />
-    <input type="email" name="email" placeholder="Your Email" required />
-    <textarea name="message" placeholder="Your Message" required></textarea>
+          <!-- ================================
+          IMAGE EXTRACTOR + BACKGROUND REMOVER
+          ================================ -->
+          <section class="tools-container">
+            <!-- IMAGE EXTRACTOR -->
+            <div class="tool" id="image_extractor">
+              <h2>🎨 Image Color Extractor</h2>
+              
+              <input type="file" id="img_input" accept="image/*">
+              <label for="img_input" class="upload-btn">Upload Image</label>
+              
+              <button id="img_toggle">Hide Image</button>
+              
+              <div class="preview-container">
+                <img id="img_preview" alt="Uploaded preview">
+              </div>
+              
+              <div id="extracted_colors"></div>
+              
+              <div class="actions">
+                <button id="ex_copy">Copy Xcode Colors</button>
+                <button id="ex_download">Download Palette</button>
+              </div>
+              
+              <canvas id="extract_canvas" style="display:none;"></canvas>
+            </div>
+            
+            <!-- BACKGROUND REMOVER -->
+            <div class="tool" id="background_remover">
+              <h2>🖼️ Background Remover</h2>
+              
+              <!-- Remove button -->
+              <button id="remove_bg_btn" class="primary-btn">Remove Background</button>
+              
+              <!-- Canvas preview -->
+              <div class="canvas-wrapper">
+                <canvas id="bg_canvas"></canvas>
+                <!-- Floating download icon -->
+                <button id="download_bg_removed" class="download-icon" title="Download">
+                  ⬇️
+                </button>
+              </div>
+              
+              <!-- Tools -->
+              <div class="tools-panel">
+                <button id="eraser_btn">Start Eraser</button>
+                
+                <button id="undo_btn">Undo</button>
+                <button id="redo_btn">Redo</button>
+                
+                <div class="slider-group">
+                  <label for="eraser_size">🖌 Size</label>
+                  <input type="range" id="eraser_size" min="5" max="100" value="20">
+                </div>
+              </div>
+            </div>
+            <!-- Notification Container -->
+            <div id="notification-container" class="notification-container"></div>
+            
+          </section>
+          <!-- ========== EXPORT SECTION (REPLACE OLD) ========== -->
+          <section id="export-section" class="export-section">
+            <h2>Export Options</h2>
+            
+            <div class="export-block">
+              <h3>Export Palette</h3>
+              
+              <div class="export-row">
+                <div class="export-note">Exports the currently visible palette (from <code>#palette</code>).</div>
+                <div class="export-buttons">
+                  <button id="export-palette-png" class="export-btn">⬇️ Export Palette PNG</button>
+                  <button id="export-palette-json" class="export-btn">⬇️ Export Palette JSON</button>
+                  <button id="export-palette-css" class="export-btn">⬇️ Export Palette CSS</button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="export-block">
+              <h3>Export Gradient (from Gradient Generator)</h3>
+              <div class="export-row">
+                <div class="export-note">
+                  This will capture the **exact** gradient shown in your Gradient Generator (<code>#gradient-preview</code>) and:
+                  <ul>
+                    <li>Download a PNG screenshot of the gradient</li>
+                    <li>Download a <code>.css</code> file that contains the gradient CSS</li>
+                  </ul>
+                </div>
+                
+                <div class="export-buttons">
+                  <button id="export-gradient" class="export-btn">⬇️ Export Gradient PNG + CSS</button>
+                </div>
+              </div>
+            </div>
+            
+            <div class="export-footer">
+              <small>Tip: change your gradient in the Gradient Generator, then press <b>Export Gradient</b> to download the exact result.</small>
+            </div>
+          </section>
+          
+          <!-- html2canvas (required) -->
+          <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+          <!-- ========== End export section ========== -->
+          
+          
+          <!-- Toast Notification -->
+          <section id="contact" class="contact">
+            <h2>Feedback</h2>
+            <form id="contactForm" action="https://formspree.io/f/{form_id}" method="post">
+              <input type="text" name="name" placeholder="Your Name" required />
+              <input type="email" name="email" placeholder="Your Email" required />
+              <textarea name="message" placeholder="Your Message" required></textarea>
     <button type="submit" class="btn btn-submit">Submit</button>
   </form>
   <p class="contact-info"><i class="fa fa-paper-plane"></i> segunstar@gmail.com</p>
@@ -376,19 +406,19 @@
 <!-- Toast Notification -->
 <div id="toast" class="toast" aria-live="polite"></div>
 <footer class="footer-section">
-            <div class="section-content">
-                <p class="copyright-text"> 2025 color palette</p>
-                <div class="social-link-list">
-                    <a href="#" class="social-link"><i class="fa-brands fa-facebook"></i></a>
-                    <a href="#" class="social-link"><i class="fa-brands fa-instagram"></i></a>
-                    <a href="#" class="social-link"><i class="fa-brands fa-x-twitter"></i></a>
-                </div>
-      
-            </div>
-        </footer>
-       
+  <div class="section-content">
+    <p class="copyright-text"> 2025 color palette</p>
+    <div class="social-link-list">
+      <a href="#" class="social-link"><i class="fa-brands fa-facebook"></i></a>
+      <a href="#" class="social-link"><i class="fa-brands fa-instagram"></i></a>
+      <a href="#" class="social-link"><i class="fa-brands fa-x-twitter"></i></a>
+    </div>
+    
+  </div>
+</footer>
 
-        <!-- Floating Help Button -->
+
+<!-- Floating Help Button -->
 <button id="open-help" class="help-floating-btn">❓ Help</button>
 
 <!-- Help Overlay -->
@@ -396,14 +426,14 @@
   <div class="help-box">
     <!-- Close Button -->
     <span id="close-help" class="help-close">&times;</span>
-
+    
     <!-- Icon -->
     <div class="help-icon" id="help-icon">🎨</div>
-
+    
     <!-- Step Content -->
     <h2 id="help-title">Welcome</h2>
     <p id="help-text">This is your full guide to Color World!</p>
-
+    
     <!-- Navigation -->
     <div class="help-nav">
       <button id="prev-step" class="help-btn">⟵ Previous</button>
@@ -412,17 +442,20 @@
   </div>
 </div>
 
-        
-  </main>
+
+</main>
 
 
 
-  <!-- script -->
-  
-    
-  
+<!-- script -->
 
-  
-  <script src="script.js"></script>
+
+
+
+
+<script src="script.js"></script>
+<script src="contrast-advanced.js"></script>
+<script src="export-module.js"></script>
+
 </body>
 </html>

@@ -147,47 +147,6 @@ generateBtn?.addEventListener('click', generatePalette);
   $('#copyGradient')?.addEventListener('click',()=>{ if(!gradPreview)return toast('No gradient to copy'); const css=gradPreview.style.background; if(!css)return toast('No gradient to copy'); navigator.clipboard.writeText(`background: ${css};`).then(()=>{toast('Gradient CSS copied');playPop();}); });
 
   $('#export_grad_img')?.addEventListener('click',()=>{ if(!gradPreview||!gradColor1||!gradColor2||!gradAngle) return toast('No gradient to export'); const a=gradColor1.value,b=gradColor2.value,angle=parseFloat(gradAngle.value||'90'); if(!a||!b) return toast('No gradient to export'); const canvas=document.createElement('canvas'); canvas.width=1000; canvas.height=280; const ctx=canvas.getContext('2d'); const rad=angle*Math.PI/180; const x=Math.cos(rad),y=Math.sin(rad); const g=ctx.createLinearGradient(canvas.width/2-x*canvas.width/2,canvas.height/2-y*canvas.height/2,canvas.width/2+x*canvas.width/2,canvas.height/2+y*canvas.height/2); g.addColorStop(0,a); g.addColorStop(1,b); ctx.fillStyle=g; ctx.fillRect(0,0,canvas.width,canvas.height); const link=Object.assign(document.createElement('a'),{href:canvas.toDataURL('image/png'),download:'gradient.png'}); link.click(); toast('Gradient saved as PNG'); });
-/* --------------------- Remaining modules: Contrast, Harmony, Shades, Color Blind, Extractor, Exports, Recent, Contact, Help --------------------- */
-
-/* ---------- Contrast (main + extra) ---------- */
-function updateContrastMain(){
-  const c1 = $('#color1');
-  const c2 = $('#color2');
-  if(!c1 || !c2) return;
-  const a = c1.value || '#ffffff';
-  const b = c2.value || '#000000';
-  const ratio = contrastRatio(a, b);
-  const elRes = $('#contrast-result');
-  const elRating = $('#contrast-rating');
-  if(elRes) elRes.textContent = `Contrast Ratio: ${ratio.toFixed(2)}:1`;
-  if(elRating){
-    let rating = 'Fail';
-    if(ratio >= 7) rating = 'AAA (Normal)';
-    else if(ratio >= 4.5) rating = 'AA (Normal)';
-    else if(ratio >= 3) rating = 'AA (Large)';
-    elRating.textContent = `WCAG: ${rating}`;
-  }
-}
-$('#color1')?.addEventListener('input', updateContrastMain);
-$('#color2')?.addEventListener('input', updateContrastMain);
-updateContrastMain();
-
-/* Extra contrast module */
-const extraA = $('#extra_color_a');
-const extraB = $('#extra_color_b');
-
-function updateExtraContrast(){
-  if(!extraA || !extraB) return;
-  const a = extraA.value, b = extraB.value;
-  const ratio = contrastRatio(a,b);
-  $('#extra_contrast_result') && ($('#extra_contrast_result').textContent = `Contrast Ratio: ${ratio.toFixed(2)}:1`);
-  const evA = $('#extra_preview_a'), evB = $('#extra_preview_b');
-  if(evA){ evA.style.background = b; evA.style.color = a; evA.textContent = 'Sample'; }
-  if(evB){ evB.style.background = a; evB.style.color = b; evB.textContent = 'Sample'; }
-}
-extraA?.addEventListener('input', updateExtraContrast);
-extraB?.addEventListener('input', updateExtraContrast);
-updateExtraContrast();
 
 /* ---------- Harmony ---------- */
 const harmonyBase = $('#h_base');
@@ -497,90 +456,6 @@ function showToast(msg) {
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), 1800);
 }
-
-
-/* ---------- Export palette TXT / JSON ---------- */
-$('#export_palette')?.addEventListener('click', () => {
-  if(!palette) return toast('No colors to export');
-  const colors = $$('.color-box', palette).map(b => b.dataset.hex).filter(Boolean).join('\n');
-  if(!colors) return toast('No colors to export');
-  const blob = new Blob([colors], { type: 'text/plain' });
-  const link = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'palette.txt' });
-  link.click();
-  toast('Palette downloaded as TXT');
-});
-
-$('#export_json')?.addEventListener('click', () => {
-  if(!palette) return toast('No colors to export');
-  const colors = $$('.color-box', palette).map(b => b.dataset.hex).filter(Boolean);
-  if(!colors.length) return toast('No colors to export');
-  const blob = new Blob([JSON.stringify(colors, null, 2)], { type: 'application/json' });
-  const link = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: 'palette.json' });
-  link.click();
-  toast('Palette exported as JSON');
-});
-
-/* ---------- Local recent palettes (save/load) ---------- */
-const recentPalettesKey = 'cw_recent_palettes';
-const maxRecent = 10;
-const savePaletteBtn = $('#save_palette');
-const exportCssBtn = $('#export_css');
-const recentGrid = $('#recent_palettes');
-
-function saveCurrentPalette(){
-  if(!palette) return toast('No palette to save');
-  const colors = $$('.color-box', palette).map(b => b.dataset.hex).filter(Boolean);
-  if(!colors.length) return toast('No colors to save');
-  let recents = JSON.parse(localStorage.getItem(recentPalettesKey) || '[]');
-  recents = [colors, ...recents.filter(p => JSON.stringify(p) !== JSON.stringify(colors))];
-  if(recents.length > maxRecent) recents = recents.slice(0, maxRecent);
-  localStorage.setItem(recentPalettesKey, JSON.stringify(recents));
-  toast('Palette saved locally');
-  renderRecentPalettes();
-}
-savePaletteBtn?.addEventListener('click', saveCurrentPalette);
-
-function renderRecentPalettes(){
-  if(!recentGrid) return;
-  recentGrid.innerHTML = '';
-  const recents = JSON.parse(localStorage.getItem(recentPalettesKey) || '[]');
-  recents.forEach((colors, idx) => {
-    const div = document.createElement('div');
-    div.className = 'recent-palette';
-    div.style.display = 'flex';
-    div.style.gap = '6px';
-    div.style.marginBottom = '8px';
-    colors.forEach(c => {
-      const box = document.createElement('div');
-      box.className = 'shade-box';
-      box.style.background = c;
-      box.title = c;
-      box.style.width = '28px';
-      box.style.height = '28px';
-      box.style.borderRadius = '6px';
-      box.addEventListener('click', (ev)=> {
-        // copy single swatch
-        navigator.clipboard.writeText(c).then(()=>{ toast('Copied: '+c); playPop(); ev.stopPropagation(); });
-      });
-      div.appendChild(box);
-    });
-    div.addEventListener('click', () => {
-      $$('.color-box', palette).forEach((b, i) => {
-        if(colors[i]) { b.style.background = colors[i]; b.dataset.hex = colors[i]; b.querySelector('.copy').textContent = colors[i]; }
-      });
-      toast('Palette loaded');
-    });
-    recentGrid.appendChild(div);
-  });
-}
-renderRecentPalettes();
-
-function exportCssVariables(){
-  if(!palette) return toast('No colors to export');
-  const colors = $$('.color-box', palette).map((b,i) => `--color${i+1}: ${b.dataset.hex};`).join('\n');
-  navigator.clipboard.writeText(`:root {\n${colors}\n}`).then(()=>{ toast('CSS variables copied'); playPop(); });
-}
-exportCssBtn?.addEventListener('click', exportCssVariables);
 
 /* ---------- Contact form (Formspree) ---------- */
 (function contactFormHandler(){
@@ -1973,6 +1848,229 @@ window.addEventListener("resize", () => {
   }
 });
 
+/* ==================================
+   Export Functions (Palette + Gradient)
+   ================================== */
 
+/**
+ * Helper: Trigger download from Blob
+ */
+function downloadBlob(content, filename, type) {
+  const blob = new Blob([content], { type });
+  const link = document.createElement("a");
+  link.download = filename;
+  link.href = URL.createObjectURL(blob);
+  link.click();
+  URL.revokeObjectURL(link.href);
+}
 
+/**
+ * Helper: Get palette colors
+ * - Looks for .color-box elements
+ * - Uses data-color if available, otherwise style.backgroundColor
+ */
+function getPaletteColors() {
+  return Array.from(document.querySelectorAll(".color-box"))
+    .map(box => box.dataset.color || box.style.backgroundColor)
+    .filter(color => !!color); // remove empty
+}
 
+/* ----------------------------
+   Export Palette as PNG
+---------------------------- */
+document.getElementById("export-palette-png")?.addEventListener("click", () => {
+  const paletteDiv = document.getElementById("palette-preview");
+  if (!paletteDiv) {
+    alert("Palette preview not found.");
+    return;
+  }
+
+  html2canvas(paletteDiv).then(canvas => {
+    const link = document.createElement("a");
+    link.download = "palette.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  });
+});
+
+/* ----------------------------
+   Export Palette as JSON
+---------------------------- */
+document.getElementById("export-palette-json")?.addEventListener("click", () => {
+  const colors = getPaletteColors();
+  if (!colors.length) {
+    alert("No colors found in palette.");
+    return;
+  }
+  const jsonContent = JSON.stringify(colors, null, 2);
+  downloadBlob(jsonContent, "palette.json", "application/json");
+});
+
+/* ----------------------------
+   Export Palette as CSS Variables
+---------------------------- */
+document.getElementById("export-palette-css")?.addEventListener("click", () => {
+  const colors = getPaletteColors();
+  if (!colors.length) {
+    alert("No colors found in palette.");
+    return;
+  }
+  const cssLines = colors.map((c, i) => `  --color-${i + 1}: ${c};`);
+  const cssText = `:root {\n${cssLines.join("\n")}\n}`;
+  downloadBlob(cssText, "palette.css", "text/css");
+});
+/* ========== Export Module JS ========== */
+/* Put this file after your main script or append to script.js (must run after DOM ready). */
+
+(() => {
+  // small helper: prefer your existing toast() if present, otherwise fallback to alert()
+  const notify = (msg) => { if (typeof toast === 'function') toast(msg); else alert(msg); };
+
+  function downloadBlob(content, filename, type) {
+    const blob = new Blob([content], { type });
+    const link = document.createElement('a');
+    link.download = filename;
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    URL.revokeObjectURL(link.href);
+  }
+
+  // Read palette colors from #palette .color-box
+  function getPaletteColors() {
+    const boxes = Array.from(document.querySelectorAll('#palette .color-box'));
+    const colors = boxes.map(box => {
+      // prefer dataset.hex or data-hex or data-color if set by your main script
+      const ds = box.dataset;
+      const hex = ds.hex || ds.color || ds.value || ds.hexcode || ds.hexCode || null;
+      if (hex) return hex;
+      // otherwise get computed background color and convert to hex if needed
+      const bg = window.getComputedStyle(box).backgroundColor;
+      return rgbStringToHex(bg);
+    }).filter(Boolean);
+    return colors;
+  }
+
+  // convert "rgb(12,34,56)" or "rgba(...)" to "#0c2238"
+  function rgbStringToHex(rgb) {
+    if (!rgb) return null;
+    // already hex?
+    if (/^#/.test(rgb.trim())) return rgb.trim();
+    const m = rgb.match(/\d+/g);
+    if (!m || m.length < 3) return null;
+    const r = parseInt(m[0], 10), g = parseInt(m[1], 10), b = parseInt(m[2], 10);
+    return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+  }
+
+  // --- Export Palette PNG (screenshot of #palette) ---
+  const btnPalettePNG = document.getElementById('export-palette-png');
+  if (btnPalettePNG) {
+    btnPalettePNG.addEventListener('click', () => {
+      const paletteEl = document.getElementById('palette');
+      if (!paletteEl) return notify('Palette element not found (#palette).');
+
+      if (typeof html2canvas === 'undefined') {
+        notify('html2canvas is required to export PNG. Include the library.');
+        return;
+      }
+
+      html2canvas(paletteEl, { backgroundColor: null, scale: 2 }).then(canvas => {
+        const link = document.createElement('a');
+        link.download = 'palette.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        notify('Palette PNG downloaded.');
+      }).catch(err => {
+        console.error(err);
+        notify('Failed to export palette PNG.');
+      });
+    });
+  }
+
+  // --- Export Palette JSON ---
+  const btnPaletteJSON = document.getElementById('export-palette-json');
+  if (btnPaletteJSON) {
+    btnPaletteJSON.addEventListener('click', () => {
+      const colors = getPaletteColors();
+      if (!colors.length) return notify('No colors found to export.');
+      downloadBlob(JSON.stringify(colors, null, 2), 'palette.json', 'application/json');
+      notify('Palette JSON downloaded.');
+    });
+  }
+
+  // --- Export Palette CSS Variables ---
+  const btnPaletteCSS = document.getElementById('export-palette-css');
+  if (btnPaletteCSS) {
+    btnPaletteCSS.addEventListener('click', () => {
+      const colors = getPaletteColors();
+      if (!colors.length) return notify('No colors found to export.');
+      const lines = colors.map((c, i) => `  --color-${i+1}: ${c};`);
+      const css = `:root {\n${lines.join('\n')}\n}\n`;
+      downloadBlob(css, 'palette.css', 'text/css');
+      notify('Palette CSS downloaded.');
+    });
+  }
+
+  // --- Export Gradient: PNG screenshot (from generator) + CSS file ---
+  const btnGradient = document.getElementById('export-gradient');
+  if (btnGradient) {
+    btnGradient.addEventListener('click', async () => {
+      // 1) find the gradient preview used by the generator
+      let gradientEl = document.querySelector('#gradient-preview'); // your generator uses this id
+      // If there are multiple, prefer the one inside the tools/generator section (heuristic)
+      if (document.querySelector('#tools #gradient-preview')) {
+        gradientEl = document.querySelector('#tools #gradient-preview');
+      }
+
+      if (!gradientEl) {
+        notify('Gradient preview element not found (#gradient-preview).');
+        return;
+      }
+
+      if (typeof html2canvas === 'undefined') {
+        notify('html2canvas is required to export PNG. Include the library.');
+        return;
+      }
+
+      try {
+        // Screenshot PNG
+        const canvas = await html2canvas(gradientEl, { backgroundColor: null, scale: 2 });
+        const link = document.createElement('a');
+        link.download = 'gradient.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+        notify('Gradient PNG downloaded.');
+      } catch (err) {
+        console.error('Gradient PNG export failed:', err);
+        notify('Failed to export gradient PNG.');
+      }
+
+      // Now build CSS for the gradient
+      // Prefer computed style background-image; fallback to generator inputs if computed style is plain color
+      const computed = window.getComputedStyle(gradientEl).backgroundImage;
+
+      let cssGradient = '';
+
+      if (computed && computed !== 'none' && computed.includes('gradient')) {
+        // use computed background (this will typically be like 'linear-gradient(...)')
+        cssGradient = computed;
+      } else {
+        // fallback: build from generator inputs
+        const c1 = (document.getElementById('gradColor1') && document.getElementById('gradColor1').value) || null;
+        const c2 = (document.getElementById('gradColor2') && document.getElementById('gradColor2').value) || null;
+        const angle = (document.getElementById('gradAngle') && document.getElementById('gradAngle').value) || '90';
+        if (c1 && c2) {
+          cssGradient = `linear-gradient(${angle}deg, ${c1}, ${c2})`;
+        }
+      }
+
+      if (cssGradient) {
+        const cssContent = `.gradient-preview {\n  background: ${cssGradient};\n}\n`;
+        downloadBlob(cssContent, 'gradient.css', 'text/css');
+        notify('Gradient CSS downloaded.');
+      } else {
+        notify('Unable to determine gradient CSS to export.');
+      }
+    });
+  }
+
+})();

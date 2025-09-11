@@ -1,0 +1,373 @@
+/* =========================
+   ColorWorld — Contrast Advanced (cw- prefix)
+   ========================= */
+#cw-contrast-advanced {
+  margin-top: 14px;
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 14px;
+  align-items: start;
+  font-family: 'Poppins', system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  color: #222;
+}
+
+/* panel left (sample + controls) */
+.cw-sample {
+  background: #fff;
+  border-radius: 12px;
+  padding: 12px;
+  box-shadow: 0 8px 30px rgba(14,14,14,0.06);
+}
+.cw-sample .cw-sample-box {
+  min-height: 92px;
+  border-radius: 10px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-weight:700;
+  font-size:1.05rem;
+  padding:12px;
+  transition: background .35s ease, color .35s ease, transform .22s ease;
+}
+.cw-sample .cw-controls {
+  margin-top:12px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+
+/* small inputs */
+.cw-controls label { display:inline-flex; gap:8px; align-items:center; font-size:0.9rem; color:#444; }
+.cw-controls input[type="color"] { width:44px; height:36px; border-radius:8px; border:none; padding:0; cursor:pointer; }
+
+/* demo controls */
+.cw-typography {
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+  margin-left:4px;
+}
+.cw-typography select, .cw-typography input[type="range"] {
+  padding:6px 8px;
+  border-radius:8px;
+  border:1px solid #e6e6e6;
+  background:#fff;
+}
+
+/* ratio / wcag info */
+.cw-info {
+  margin-top: 10px;
+  display:flex;
+  gap:12px;
+  flex-wrap:wrap;
+  align-items:center;
+}
+.cw-info .cw-ratio { font-weight:700; font-size:1rem; }
+.cw-info .cw-wcag { color:#666; font-weight:600; }
+
+/* heat bar */
+.cw-heat {
+  margin-top:10px;
+  height:12px;
+  border-radius:999px;
+  background: linear-gradient(90deg, #ff4d4f 0%, #ffb86b 30%, #fff8a6 50%, #b9f279 75%, #2ed573 100%);
+  position:relative;
+  overflow:hidden;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.35);
+}
+.cw-heat .cw-pointer {
+  position:absolute;
+  top:-6px;
+  width:12px;
+  height:24px;
+  border-radius:6px;
+  background:#111;
+  transform:translateX(-50%);
+  box-shadow:0 6px 18px rgba(0,0,0,0.18);
+  transition:left .35s ease;
+}
+
+/* suggestions column */
+#cw-suggestions-panel {
+  background:#fff;
+  border-radius:12px;
+  padding:12px;
+  box-shadow:0 8px 30px rgba(14,14,14,0.06);
+}
+#cw-suggestions-panel h4 { margin:0 0 8px 0; font-size:1rem; }
+.cw-suggestion {
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+  align-items:center;
+  padding:10px;
+  border-radius:8px;
+  border:1px solid rgba(0,0,0,0.04);
+  background: #fff;
+  margin-bottom:8px;
+}
+.cw-suggestion.pass { background:#f7fff4; }
+.cw-suggestion .cw-s-left { display:flex; gap:10px; align-items:center; }
+.cw-suggestion .cw-badge { font-weight:700; font-size:0.9rem; }
+.cw-suggestion .cw-actions { display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+
+/* small buttons */
+.cw-btn {
+  padding:6px 10px;
+  border-radius:8px;
+  border:1px solid rgba(0,0,0,0.06);
+  background:#f5f6fb;
+  cursor:pointer;
+  font-weight:600;
+  font-size:0.9rem;
+}
+.cw-btn.prim {
+  background: linear-gradient(90deg,#6c63ff,#03a9f4);
+  color:#fff; border:none;
+}
+.cw-btn.ghost { background:transparent; border:1px solid #eee; }
+
+/* sim filters */
+.cw-sim-wrap { margin-top:10px; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
+.cw-sim-wrap select { padding:8px; border-radius:8px; border:1px solid #e6e6e6; }
+
+/* bottom area (save favorites) */
+.cw-fav {
+  margin-top:10px;
+  display:flex;
+  gap:8px;
+  align-items:center;
+  flex-wrap:wrap;
+}
+
+/* responsive */
+@media (max-width: 900px) {
+  #cw-contrast-advanced { grid-template-columns: 1fr; }
+  #cw-suggestions-panel { order: 2; }
+  .cw-sample { order: 1; }
+}
+
+/* accessibility/visual niceties */
+.cw-copy-toast {
+  position:fixed;
+  left:50%;
+  bottom:24px;
+  transform:translateX(-50%);
+  background:rgba(0,0,0,0.8);
+  color:#fff;
+  padding:8px 14px;
+  border-radius:10px;
+  font-weight:600;
+  z-index:11000;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s;
+}
+.cw-copy-toast.show { opacity:1; pointer-events:auto; }
+
+/* small note style */
+.cw-note { font-size:0.85rem; color:#666; margin-top:8px; }
+/* ---------- ColorWorld Buttons ---------- */
+#cw-suggestions-panel button {
+  background-color: #007bff;      /* Blue base color */
+  color: #fff;                    /* White text */
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  margin: 4px 2px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-weight: 500;
+  transition: all 0.2s ease-in-out;
+}
+
+#cw-suggestions-panel button:hover {
+  background-color: #0056b3;      /* Darker blue on hover */
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+
+#cw-suggestions-panel button:active {
+  background-color: #00408d;
+  transform: translateY(0);
+}
+
+#cw-suggestions-panel button.prim {
+  background-color: #0066cc;
+  color: #fff;
+}
+
+#cw-suggestions-panel button.prim:hover {
+  background-color: #004a99;
+}
+/* =========================
+   Contrast Advanced CW Styles
+========================= */
+#cw-contrast-advanced {
+  font-family: system-ui, sans-serif;
+  margin: 1rem 0;
+  color: #222;
+}
+
+#cw-contrast-advanced .cw-sample-box {
+  padding: 1rem 1.2rem;
+  margin-bottom: 0.8rem;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  min-height: 40px;
+}
+
+#cw-contrast-advanced .cw-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+  align-items: center;
+}
+
+#cw-contrast-advanced .cw-controls label {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+#cw-contrast-advanced .cw-btn {
+  padding: 0.3rem 0.6rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  background: #f5f5f5;
+  cursor: pointer;
+  transition: 0.2s all;
+}
+
+#cw-contrast-advanced .cw-btn.prim {
+  background: #0078d4;
+  color: #fff;
+  border-color: #005ea3;
+}
+
+#cw-contrast-advanced .cw-btn:hover {
+  opacity: 0.85;
+}
+
+#cw-contrast-advanced .cw-info {
+  margin-bottom: 0.8rem;
+}
+
+#cw-contrast-advanced .cw-ratio,
+#cw-contrast-advanced .cw-wcag {
+  font-weight: 600;
+}
+
+#cw-contrast-advanced #cw-heat {
+  height: 8px;
+  background: linear-gradient(to right, #000 0%, #fff 100%);
+  border-radius: 4px;
+  position: relative;
+  margin-bottom: 0.6rem;
+}
+
+#cw-contrast-advanced #cw-pointer {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: red;
+  position: absolute;
+  top: -2px;
+  transition: left 0.3s ease;
+}
+
+#cw-contrast-advanced .cw-sim-wrap {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+}
+
+#cw-contrast-advanced .cw-fav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-bottom: 0.6rem;
+}
+
+#cw-contrast-advanced .cw-suggestion {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.3rem 0.5rem;
+  margin-bottom: 0.4rem;
+  border-radius: 5px;
+  background: #f7f7f7;
+  transition: all 0.3s ease;
+}
+
+#cw-contrast-advanced .cw-suggestion.pass {
+  background: #e0ffe0;
+}
+
+#cw-contrast-advanced .cw-badge {
+  font-weight: 600;
+  margin-right: 0.4rem;
+}
+
+#cw-contrast-advanced .cw-copy-toast {
+  position: fixed;
+  bottom: 1rem;
+  right: 1rem;
+  background: #333;
+  color: #fff;
+  padding: 0.5rem 0.8rem;
+  border-radius: 6px;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+  font-size: 0.9rem;
+  z-index: 9999;
+}
+
+#cw-contrast-advanced #cw-suggestions-panel {
+  margin-top: 1rem;
+  padding: 0.6rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fafafa;
+}
+
+#cw-contrast-advanced .cw-btn.ghost {
+  border: none;
+  background: transparent;
+  padding: 0.2rem;
+  font-size: 0.85rem;
+}
+
+/* ---------- Dark Mode ---------- */
+body.cw-dark {
+  background: #1a1a1a;
+  color: #ddd;
+}
+
+body.cw-dark #cw-contrast-advanced .cw-sample-box {
+  border: 1px solid #444;
+}
+
+body.cw-dark #cw-contrast-advanced .cw-btn {
+  background: #333;
+  color: #ddd;
+  border-color: #555;
+}
+
+body.cw-dark #cw-contrast-advanced .cw-btn.prim {
+  background: #1a73e8;
+  border-color: #1565c0;
+}
+
+body.cw-dark #cw-contrast-advanced .cw-suggestion {
+  background: #2a2a2a;
+}
+
+body.cw-dark #cw-contrast-advanced .cw-suggestion.pass {
+  background: #144d14;
+}
