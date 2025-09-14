@@ -1244,3 +1244,183 @@ label[for="eraser_size"] {
 #contrast-checker {
   display: none;
 }
+.hex-controls input { font-family: monospace; font-weight:600; }
+#addSwatch, #applyHex, #clearPalette { background:#6e58e3; border:none; color:#fff; padding:8px 12px; border-radius:8px; cursor:pointer; }
+#addSwatch:hover, #applyHex:hover, #clearPalette:hover { filter:brightness(.95); }
+.palette-controls { display:flex; gap:8px; margin-top:8px; }
+.palette-empty-note { color:#666; font-size:0.95rem; }
+.palette-card { display:flex; gap:8px; align-items:center; }
+/* =========================================================================
+   Harmony Grid + Swatches
+   ========================================================================= */
+
+.harmony-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+  align-items: flex-start;
+  margin-top: 1rem;
+}
+
+.cg-swatch {
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  cursor: pointer;
+  position: relative;
+  transition: transform 0.2s ease;
+}
+
+.cg-swatch:hover {
+  transform: scale(1.05);
+}
+
+/* toast already styled inline in JS, but you can reinforce it here */
+.cw-copy-toast {
+  font-size: 14px;
+  z-index: 9999;
+  pointer-events: none;
+}
+/* Base swatch box */
+.color-box {
+  position: relative;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  width: 80px;
+  height: 80px;
+  border-radius: 8px;
+  margin: 6px;
+  cursor: pointer;
+  user-select: none;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.color-box:hover {
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+}
+
+/* Selected state with checkmark */
+.color-box.selected {
+  outline: 3px solid #2196f3;
+  outline-offset: 2px;
+}
+
+.color-box.selected::after {
+  content: "✔";
+  position: absolute;
+  top: 4px;
+  right: 6px;
+  font-size: 20px;
+  font-weight: bold;
+  color: #2196f3;
+  background: #fff;
+  border-radius: 50%;
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.25);
+}
+#toast-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 9999;
+}
+
+.toast {
+  background: #333;
+  color: #fff;
+  padding: 12px 18px;
+  border-radius: 6px;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.4s, transform 0.4s;
+  font-size: 15px;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.toast.success {
+  background: #28a745; /* Green */
+}
+
+.toast.error {
+  background: #dc3545; /* Red */
+}
+.toast {
+  cursor: pointer; /* 👈 shows users they can click */
+}
+
+.harmony-section {
+  margin-top: 20px;
+}
+.harmony-section h3 {
+  margin: 10px 0;
+  font-size: 1rem;
+  color: #444;
+}
+.harmony-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+.harmony-row .shade-box {
+  width: 60px;
+  height: 60px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: transform 0.2s;
+}
+.harmony-row .shade-box:hover {
+  transform: scale(1.1);
+}
+#magnifier {
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+  background: #fff;
+}
+#eyedrop_info {
+  font-size: 14px;
+  margin-top: 8px;
+  font-weight: 500;
+  color: #444;
+}
+.shade-box {
+  display: inline-block;
+  width: 100px;
+  height: 100px;
+  margin: 5px;
+  border-radius: 8px;
+  position: relative;
+  opacity: 0;
+  transform: translateY(10px);
+  cursor: pointer;
+  transition: all 0.3s;
+}
+
+.shade-box:hover {
+  transform: scale(1.05);
+}
+
+.color-label {
+  font-size: 12px;
+  color: #fff;
+  background: rgba(0,0,0,0.5);
+  padding: 4px 6px;
+  border-radius: 4px;
+  position: absolute;
+  bottom: 6px;
+  left: 6px;
+}

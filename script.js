@@ -1,7 +1,7 @@
 /* =========================================================================
    Color World — Ultimate Unified script.js
-   Includes: splash, navbar, palette, live preview, gradient, contrast,
-   harmony, shades, color blindness, image extractor, contact form, help,
+   Includes: splash, navbar,, live preview, gradient, contrast,
+   harmony, shades, color blindness,, contact form, help,
    drag & drop, keyboard shortcuts, export, pulse/glow hover effects
    ========================================================================= */
 
@@ -137,6 +137,46 @@ generateBtn?.addEventListener('click', generatePalette);
   });
 
   initPaletteBoxes();
+  // ==================== Restore Palette from Color Guide ====================
+function restoreFromColorGuide() {
+  const palette = document.querySelector('#palette');
+  if (!palette) return;
+
+  const stored = localStorage.getItem('mainPalette');
+  if (!stored) return;
+
+  try {
+    const hexArray = JSON.parse(stored);
+    const boxes = palette.querySelectorAll('.color-box');
+
+    // if palette has fewer boxes than saved, create extra boxes
+    while(boxes.length < hexArray.length){
+      const box = document.createElement('div');
+      box.className = 'color-box';
+      const label = document.createElement('span');
+      label.className = 'copy';
+      box.appendChild(label);
+      palette.appendChild(box);
+    }
+
+    const allBoxes = palette.querySelectorAll('.color-box');
+    allBoxes.forEach((box, i) => {
+      const hex = hexArray[i] || '#'+Math.floor(Math.random()*0xFFFFFF).toString(16).padStart(6,'0');
+      box.style.background = hex;
+      box.dataset.hex = hex;
+      const label = box.querySelector('.copy');
+      if(label) label.textContent = hex.toUpperCase();
+    });
+
+    if(typeof toast === 'function') toast('Palette restored from Color Guide!');
+  } catch(e) {
+    console.warn('Failed to restore palette from Color Guide:', e);
+  }
+}
+
+// Call after palette boxes are initialized
+document.addEventListener('DOMContentLoaded', restoreFromColorGuide);
+
 
   /* ---------- Gradient ---------- */
   const gradColor1=$('#gradColor1'), gradColor2=$('#gradColor2'), gradAngle=$('#gradAngle'), angleVal=$('#angleVal'), gradPreview=$('#gradient-preview');
@@ -147,107 +187,170 @@ generateBtn?.addEventListener('click', generatePalette);
   $('#copyGradient')?.addEventListener('click',()=>{ if(!gradPreview)return toast('No gradient to copy'); const css=gradPreview.style.background; if(!css)return toast('No gradient to copy'); navigator.clipboard.writeText(`background: ${css};`).then(()=>{toast('Gradient CSS copied');playPop();}); });
 
   $('#export_grad_img')?.addEventListener('click',()=>{ if(!gradPreview||!gradColor1||!gradColor2||!gradAngle) return toast('No gradient to export'); const a=gradColor1.value,b=gradColor2.value,angle=parseFloat(gradAngle.value||'90'); if(!a||!b) return toast('No gradient to export'); const canvas=document.createElement('canvas'); canvas.width=1000; canvas.height=280; const ctx=canvas.getContext('2d'); const rad=angle*Math.PI/180; const x=Math.cos(rad),y=Math.sin(rad); const g=ctx.createLinearGradient(canvas.width/2-x*canvas.width/2,canvas.height/2-y*canvas.height/2,canvas.width/2+x*canvas.width/2,canvas.height/2+y*canvas.height/2); g.addColorStop(0,a); g.addColorStop(1,b); ctx.fillStyle=g; ctx.fillRect(0,0,canvas.width,canvas.height); const link=Object.assign(document.createElement('a'),{href:canvas.toDataURL('image/png'),download:'gradient.png'}); link.click(); toast('Gradient saved as PNG'); });
+/* =========================================================================
+   Harmony Generator — Advanced with chroma.js
+   ========================================================================= */
 
-/* ---------- Harmony ---------- */
-const harmonyBase = $('#h_base');
-const harmonyMode = $('#h_mode');
-const harmonyGrid = $('#harmony_grid');
-const harmonyGenerate = $('#h_generate');
-const harmonyCopy = $('#h_copy');
+// Selectors
+const harmonyBase = document.querySelector("#h_base");
+const harmonyMode = document.querySelector("#h_mode");
+const harmonyGrid = document.querySelector("#harmony_grid");
+const harmonyGenerate = document.querySelector("#h_generate");
+const harmonyCopy = document.querySelector("#h_copy");
 
-function generateHarmonyColors(baseHex, mode){
-  try {
-    const [h,s,l] = hexToHsl(baseHex);
-    if(mode === 'monochrome') return [hslToHex(h,s,Math.max(0,l-20)), baseHex, hslToHex(h,s,Math.min(100,l+20))];
-    let angles = [];
-    switch(mode){
-      case 'complementary': angles = [0, 180]; break;
-      case 'analogous': angles = [0, 30, 330]; break;
-      case 'triadic': angles = [0, 120, 240]; break;
-      case 'tetradic': angles = [0, 90, 180, 270]; break;
-      default: angles = [0]; break;
-    }
-    return angles.map(a => hslToHex((h + a) % 360, s, l));
-  } catch(e){
-    return [baseHex];
+// Generate harmony colors
+function generateHarmony(baseHex, mode = "complementary") {
+  if (!chroma.valid(baseHex)) {
+    console.warn("Invalid base color:", baseHex);
+    return [];
   }
+
+  let colors = [];
+
+  switch (mode) {
+    case "complementary":
+      colors = [baseHex, chroma(baseHex).set("hsl.h", "+180").hex()];
+      break;
+
+    case "analogous":
+      colors = chroma
+        .scale([
+          chroma(baseHex).set("hsl.h", "-30"),
+          baseHex,
+          chroma(baseHex).set("hsl.h", "+30"),
+        ])
+        .mode("lch")
+        .colors(5);
+      break;
+
+    case "triadic":
+      colors = [
+        baseHex,
+        chroma(baseHex).set("hsl.h", "+120").hex(),
+        chroma(baseHex).set("hsl.h", "+240").hex(),
+      ];
+      break;
+
+    case "split-complementary":
+      colors = [
+        baseHex,
+        chroma(baseHex).set("hsl.h", "+150").hex(),
+        chroma(baseHex).set("hsl.h", "+210").hex(),
+      ];
+      break;
+
+    case "tetradic":
+      colors = [
+        baseHex,
+        chroma(baseHex).set("hsl.h", "+90").hex(),
+        chroma(baseHex).set("hsl.h", "+180").hex(),
+        chroma(baseHex).set("hsl.h", "+270").hex(),
+      ];
+      break;
+
+    case "monochrome": // ✅ match your HTML
+    case "monochromatic": // safe alias
+      colors = chroma
+        .scale([chroma(baseHex).brighten(2), baseHex, chroma(baseHex).darken(2)])
+        .mode("lab")
+        .colors(5);
+      break;
+
+    default:
+      colors = [baseHex];
+      break;
+  }
+
+  return colors;
 }
 
-function renderHarmony(colors){
-  if(!harmonyGrid) return;
-  harmonyGrid.innerHTML = '';
-  colors.forEach(c => {
-    const d = document.createElement('div');
-    d.className = 'shade-box';
-    d.style.background = c;
-    d.textContent = c;
-    d.title = `Click to copy ${c}`;
-    d.setAttribute('role','button');
-    d.style.cursor = 'pointer';
-    // hover glow
-    d.addEventListener('mouseenter', () => {
-      d.style.boxShadow = '0 0 14px rgba(0,0,0,0.18), 0 0 18px rgba(108,99,255,0.25)';
-      d.style.transform = 'scale(1.03)';
-      // live preview
-      if($('#live-preview')) { $('#live-preview').style.backgroundColor = c; $('#live-preview').style.color = getReadableText(c); $('#live-preview').textContent = `Preview: ${c}`; }
+// Render harmony colors to UI
+function renderHarmony(colors = []) {
+  if (!harmonyGrid) return;
+  harmonyGrid.innerHTML = ""; // clear old swatches
+
+  colors.forEach((hex) => {
+    const swatch = document.createElement("div");
+    swatch.className = "cg-swatch";
+    swatch.style.background = hex;
+    swatch.title = hex;
+    swatch.style.position = "relative";
+
+    // hex label
+    const label = document.createElement("span");
+    label.textContent = hex;
+    label.style.position = "absolute";
+    label.style.bottom = "-18px";
+    label.style.left = "50%";
+    label.style.transform = "translateX(-50%)";
+    label.style.fontSize = "12px";
+    label.style.color = "#333";
+    label.style.background = "#fff";
+    label.style.padding = "2px 4px";
+    label.style.borderRadius = "4px";
+    label.style.boxShadow = "0 1px 3px rgba(0,0,0,0.2)";
+    label.style.whiteSpace = "nowrap";
+
+    // click-to-copy single swatch
+    swatch.addEventListener("click", () => {
+      navigator.clipboard.writeText(hex).then(() => {
+        showToast(`${hex} copied!`);
+      });
     });
-    d.addEventListener('mouseleave', () => {
-      d.style.boxShadow = '';
-      d.style.transform = '';
-      if($('#live-preview')) { $('#live-preview').style.backgroundColor = ''; $('#live-preview').style.color = ''; $('#live-preview').textContent = 'Live Preview'; }
-    });
-    d.addEventListener('click', () => {
-      navigator.clipboard.writeText(c).then(()=>{ toast('Copied ' + c); playPop(); d.animate([{ transform: 'scale(1)' }, { transform: 'scale(1.06)' }, { transform: 'scale(1)' }], { duration: 200 }); }).catch(()=>{ toast('Copied ' + c); });
-    });
-    harmonyGrid.appendChild(d);
+
+    swatch.appendChild(label);
+    harmonyGrid.appendChild(swatch);
   });
 }
 
-harmonyGenerate?.addEventListener('click', () => {
-  const base = harmonyBase?.value || '#ff6600';
-  const mode = harmonyMode?.value || 'complementary';
-  const colors = generateHarmonyColors(base, mode);
-  renderHarmony(colors);
-});
-harmonyCopy?.addEventListener('click', () => {
-  if(!harmonyGrid) return toast('No harmony colors to copy');
-  const colors = $$('.shade-box', harmonyGrid).map(d => d.textContent).filter(Boolean).join(', ');
-  if(!colors) return toast('No harmony colors to copy');
-  navigator.clipboard.writeText(colors).then(()=>{ toast('Copied Harmony Colors'); playPop(); });
-});
-
-/* ---------- Shades & Tints ---------- */
-const shBase = $('#sh_base');
-const shGenerate = $('#sh_generate');
-const shGrid = $('#sh_grid');
-
-function generateShadesTintsGrid(baseHex){
-  if(!shGrid) return;
-  shGrid.innerHTML = '';
-  const [h,s,l] = hexToHsl(baseHex);
-  for(let i=10;i<=90;i+=10){
-    const tint = hslToHex(h,s,Math.min(100, l + i));
-    const shade = hslToHex(h,s,Math.max(0, l - i));
-    [tint, shade].forEach(c => {
-      const d = document.createElement('div');
-      d.className = 'shade-box';
-      d.style.background = c;
-      d.textContent = c;
-      d.title = `Click to copy ${c}`;
-      d.style.cursor = 'pointer';
-      d.addEventListener('mouseenter', ()=>{ d.style.boxShadow='0 0 12px rgba(0,0,0,0.12)'; d.style.transform='scale(1.03)'; if($('#live-preview')){ $('#live-preview').style.backgroundColor=c; $('#live-preview').style.color=getReadableText(c); $('#live-preview').textContent=`Preview: ${c}`;} });
-      d.addEventListener('mouseleave', ()=>{ d.style.boxShadow=''; d.style.transform=''; if($('#live-preview')){ $('#live-preview').style.backgroundColor=''; $('#live-preview').style.color=''; $('#live-preview').textContent='Live Preview'; } });
-      d.addEventListener('click', ()=>{ navigator.clipboard.writeText(c).then(()=>{ toast('Copied ' + c); playPop(); d.animate([{transform:'scale(1)'},{transform:'scale(1.06)'},{transform:'scale(1)'}],{duration:200}); }); });
-      shGrid.appendChild(d);
-    });
+// Toast for copy feedback
+function showToast(msg) {
+  let toast = document.querySelector(".cw-copy-toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.className = "cw-copy-toast";
+    toast.style.position = "fixed";
+    toast.style.bottom = "20px";
+    toast.style.left = "50%";
+    toast.style.transform = "translateX(-50%)";
+    toast.style.background = "#333";
+    toast.style.color = "#fff";
+    toast.style.padding = "8px 12px";
+    toast.style.borderRadius = "6px";
+    toast.style.opacity = "0";
+    toast.style.transition = "opacity 0.3s";
+    document.body.appendChild(toast);
   }
+  toast.textContent = msg;
+  toast.style.opacity = "1";
+  setTimeout(() => (toast.style.opacity = "0"), 1800);
 }
 
-shGenerate?.addEventListener('click', ()=> {
-  const base = shBase?.value || '#ff6600';
-  generateShadesTintsGrid(base);
-  toast('Tints & Shades generated');
+// Event bindings
+document.addEventListener("DOMContentLoaded", () => {
+  if (harmonyGenerate) {
+    harmonyGenerate.addEventListener("click", () => {
+      const baseHex = harmonyBase?.value || "#03a9f4";
+      let mode = harmonyMode?.value || "complementary";
+
+      // normalize mode names
+      if (mode === "monochromatic") mode = "monochrome";
+
+      const result = generateHarmony(baseHex, mode);
+      renderHarmony(result);
+    });
+  }
+
+  if (harmonyCopy) {
+    harmonyCopy.addEventListener("click", () => {
+      const swatches = [...document.querySelectorAll("#harmony_grid .cg-swatch")];
+      const hexes = swatches.map((s) => s.title).join(", ");
+      navigator.clipboard.writeText(hexes).then(() => showToast("All colors copied!"));
+    });
+  }
 });
+
+
 
 /* ---------- Color Blindness Simulator ---------- */
 const cbText = $('#cb_text'), cbBg = $('#cb_bg'), cbGrid = $('#cb_grid'), cbRatio = $('#cb_ratio');
@@ -282,172 +385,7 @@ function updateBlindness(){
 $('#cb_text')?.addEventListener('input', updateBlindness);
 $('#cb_bg')?.addEventListener('input', updateBlindness);
 updateBlindness();
-// ----- Image Extractor: Top 10 Dominant Colors -----
-const imgInput = document.getElementById('img_input');
-const imgPreview = document.getElementById('img_preview');
-const imgToggle = document.getElementById('img_toggle');
-const extractedColors = document.getElementById('extracted_colors');
-const copyBtn = document.getElementById('ex_copy');
-const downloadBtn = document.getElementById('ex_download');
-const canvas = document.getElementById('extract_canvas');
-const ctx = canvas.getContext('2d');
 
-let colors = [];
-
-// Upload image & preview
-imgInput.addEventListener('change', e => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = () => {
-        imgPreview.src = reader.result;
-        imgPreview.style.display = 'block';
-        imgToggle.style.display = 'inline-block';
-        imgPreview.onload = () => extractColors(imgPreview);
-    };
-    reader.readAsDataURL(file);
-});
-
-// Toggle show/hide image
-imgToggle.addEventListener('click', () => {
-    if (imgPreview.style.display === 'none') {
-        imgPreview.style.display = 'block';
-        imgToggle.textContent = 'Hide Image';
-    } else {
-        imgPreview.style.display = 'none';
-        imgToggle.textContent = 'Show Image';
-    }
-});
-
-// Extract top 10 dominant colors
-function extractColors(image) {
-    // Downscale for performance
-    const width = 100;
-    const height = 100;
-    canvas.width = width;
-    canvas.height = height;
-    ctx.drawImage(image, 0, 0, width, height);
-
-    const data = ctx.getImageData(0, 0, width, height).data;
-    const colorMap = {};
-
-    // Count pixel colors
-    for (let i = 0; i < data.length; i += 4) {
-        const r = data[i];
-        const g = data[i + 1];
-        const b = data[i + 2];
-        const a = data[i + 3];
-
-        // Skip transparent pixels
-        if (a < 128) continue;
-
-        const hex = rgbToHex(r, g, b);
-        colorMap[hex] = (colorMap[hex] || 0) + 1;
-    }
-
-    // Sort colors by frequency
-    let sortedColors = Object.entries(colorMap)
-        .map(([hex, count]) => ({ hex, count }))
-        .sort((a, b) => b.count - a.count)
-        .map(c => c.hex);
-
-    // Pick top 10 visually distinct colors
-    colors = pickDistinctColors(sortedColors, 10);
-
-    displayColors();
-}
-
-// Convert RGB to HEX
-function rgbToHex(r, g, b) {
-    return '#' + [r, g, b].map(x => x.toString(16).padStart(2, '0')).join('');
-}
-
-// Pick visually distinct colors from sorted array
-function pickDistinctColors(colorArray, count) {
-    const distinct = [];
-    const distance = (c1, c2) => {
-        const rgb1 = hexToRgb(c1);
-        const rgb2 = hexToRgb(c2);
-        return Math.sqrt(
-            Math.pow(rgb1.r - rgb2.r, 2) +
-            Math.pow(rgb1.g - rgb2.g, 2) +
-            Math.pow(rgb1.b - rgb2.b, 2)
-        );
-    };
-
-    for (let color of colorArray) {
-        if (distinct.length === 0) {
-            distinct.push(color);
-            continue;
-        }
-        const isDistinct = distinct.every(c => distance(c, color) > 30); // tweak threshold
-        if (isDistinct) distinct.push(color);
-        if (distinct.length >= count) break;
-    }
-
-    // If less than desired count, fill with next most frequent colors
-    let i = 0;
-    while (distinct.length < count && i < colorArray.length) {
-        if (!distinct.includes(colorArray[i])) distinct.push(colorArray[i]);
-        i++;
-    }
-
-    return distinct;
-}
-
-// Convert HEX to RGB
-function hexToRgb(hex) {
-    hex = hex.replace('#', '');
-    return {
-        r: parseInt(hex.substring(0, 2), 16),
-        g: parseInt(hex.substring(2, 4), 16),
-        b: parseInt(hex.substring(4, 6), 16)
-    };
-}
-
-// Display extracted colors
-function displayColors() {
-    extractedColors.innerHTML = '';
-    colors.forEach((color, i) => {
-        const box = document.createElement('div');
-        box.className = 'shade-box';
-        box.style.background = color;
-        box.setAttribute('data-color', color);
-        extractedColors.appendChild(box);
-
-        // Animate fadeSlideUp
-        setTimeout(() => {
-            box.style.opacity = 1;
-            box.style.transform = 'translateY(0)';
-        }, i * 50);
-    });
-}
-
-// Copy colors as text
-copyBtn.addEventListener('click', () => {
-    if (colors.length === 0) return;
-    navigator.clipboard.writeText(colors.join(', '));
-    showToast('Colors copied!');
-});
-
-// Download palette as PNG
-downloadBtn.addEventListener('click', () => {
-    if (colors.length === 0) return;
-    const size = 100;
-    canvas.width = size * colors.length;
-    canvas.height = size;
-
-    colors.forEach((color, i) => {
-        ctx.fillStyle = color;
-        ctx.fillRect(i * size, 0, size, size);
-    });
-
-    const link = document.createElement('a');
-    link.href = canvas.toDataURL('image/png');
-    link.download = 'palette.png';
-    link.click();
-});
 
 // Toast helper
 function showToast(msg) {
@@ -457,31 +395,6 @@ function showToast(msg) {
     setTimeout(() => toast.classList.remove('show'), 1800);
 }
 
-/* ---------- Contact form (Formspree) ---------- */
-(function contactFormHandler(){
-  const contactForm = $('#contactForm');
-  if(!contactForm) return;
-  contactForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    const formData = new FormData(contactForm);
-    try {
-      const res = await fetch(contactForm.action, {
-        method: 'POST',
-        body: formData,
-        headers: { 'Accept': 'application/json' },
-      });
-      if (res.ok) {
-        toast('Your message was sent!');
-        contactForm.reset();
-      } else {
-        toast('Failed to send message');
-      }
-    } catch (err) {
-      console.error('Contact send error', err);
-      toast('Failed to send message');
-    }
-  });
-})();
 
 /* ---------- Help overlay & highlight ---------- */
 (function helpOverlayModule(){
@@ -1403,674 +1316,732 @@ document.addEventListener('keydown', e => {
   }
 });
 /* ---------- Visual & Interactive Enhancements ---------- */
-
-// Animated color preview on hover
-const previewBox = $('#animated-preview'); // a sample element to show live color
-if(previewBox){
-  $$('.color-box', palette).forEach(box => {
-    box.addEventListener('mouseenter', () => {
-      const hex = box.dataset.hex;
-      previewBox.style.transition = 'background-color 0.4s, color 0.4s';
-      previewBox.style.backgroundColor = hex;
-      previewBox.style.color = getReadableText(hex);
-      previewBox.textContent = `Preview: ${hex}`;
-    });
-    box.addEventListener('mouseleave', () => {
-      previewBox.style.backgroundColor = '';
-      previewBox.style.color = '';
-      previewBox.textContent = 'Live Preview';
-    });
-  });
-}
-
-// Tooltip guidance for buttons & tools
-const tooltipElements = $$('[data-tooltip]');
-tooltipElements.forEach(el => {
-  const tip = document.createElement('div');
-  tip.className = 'tooltip';
-  tip.textContent = el.dataset.tooltip;
-  Object.assign(tip.style, {
-    position: 'absolute',
-    background: '#111',
-    color: '#fff',
-    padding: '5px 10px',
-    borderRadius: '6px',
-    fontSize: '12px',
-    pointerEvents: 'none',
-    opacity: 0,
-    transition: 'opacity 0.2s'
-  });
-  document.body.appendChild(tip);
-
-  el.addEventListener('mouseenter', () => {
-    const rect = el.getBoundingClientRect();
-    tip.style.top = `${rect.top - 30 + window.scrollY}px`;
-    tip.style.left = `${rect.left + rect.width/2 - tip.offsetWidth/2}px`;
-    tip.style.opacity = 1;
-  });
-  el.addEventListener('mouseleave', () => { tip.style.opacity = 0; });
-});
-
-// Live “Apply to Mockup” view
-const mockupCards = $$('.mockup-card'); // some sample UI cards/buttons
-const applyToMockup = (hex) => {
-  mockupCards.forEach(card => {
-    card.style.transition = 'background-color 0.3s, color 0.3s';
-    card.style.backgroundColor = hex;
-    card.style.color = getReadableText(hex);
-  });
-};
-
-// When clicking a color box, apply to mockups
-palette?.addEventListener('click', ev => {
-  const box = ev.target.closest('.color-box');
-  if(!box || !box.dataset.hex) return;
-  applyToMockup(box.dataset.hex);
-});
-/* =========================================================================
-   Color World — Safe Enhancement Loader
-   ========================================================================= */
-document.addEventListener('DOMContentLoaded', () => {
-
-  // --- Harmony grid setup (if not already populated) ---
-  const grid = $('#harmony_grid');
-  if(grid && !grid.hasChildNodes() && typeof genHarmony === 'function'){
-    const base = $('#h_base')?.value || '#ff6600';
-    const mode = $('#h_mode')?.value || 'complementary';
-    const colors = genHarmony(base, mode);
-    grid.innerHTML = '';
-    colors.forEach(c => {
-      const d = document.createElement('div');
-      d.className = 'shade-box';
-      d.style.background = c;
-      d.textContent = c;
-      d.addEventListener('click', () => {
-        navigator.clipboard.writeText(c).then(()=>{ toast('Copied ' + c); playPop(); });
-      });
-      grid.appendChild(d);
-    });
-  }
-
-  // --- Tints & Shades grid setup (if empty) ---
-  const shGrid = $('#sh_grid');
-  if(shGrid && !shGrid.hasChildNodes()){
-    const base = $('#sh_base')?.value || '#ff6600';
-    if(typeof $('#sh_generate')?.click === 'function'){
-      $('#sh_generate').click();
-    }
-  }
-
-  // --- Keyboard shortcuts for Harmony only ---
-  document.addEventListener('keydown', e => {
-    if(['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
-    if(e.key.toLowerCase() === 'h'){ $('#h_generate')?.click(); toast('Harmony generated'); }
-    if(e.key.toLowerCase() === 'c'){ $('#h_copy')?.click(); toast('Harmony copied'); }
-  });
-
-});
-document.addEventListener('DOMContentLoaded', () => {
-  const openHelpBtn = document.getElementById('open-help');
-  const helpOverlay = document.getElementById('help-overlay');
-  const closeHelpBtn = document.getElementById('close-help');
-  const helpTitle = document.getElementById('help-title');
-  const helpText = document.getElementById('help-text');
-  const helpIcon = document.getElementById('help-icon');
-  const prevStepBtn = document.getElementById('prev-step');
-  const nextStepBtn = document.getElementById('next-step');
-
-  // Full walkthrough steps
-  const helpSteps = [
-    { icon: '🎨', title: "Welcome", text: "Welcome to Color World! Explore palettes, gradients, and contrast tools." },
-    { icon: '🖌️', title: "Palette Generator", text: "Click 'Generate Palette' or press Spacebar to quickly create new color palettes. Click a color to copy it." },
-    { icon: '👓', title: "Contrast Checker", text: "Check the contrast between two colors to ensure your designs are accessible. Use the color pickers or set from the palette." },
-    { icon: '🌈', title: "Gradient Generator", text: "Create gradients by selecting two colors and adjusting the angle. Copy the CSS code for use in your projects." },
-    { icon: '🎼', title: "Color Harmony", text: "Select a base color and a harmony mode (complementary, analogous, triadic, etc.) to generate harmonious palettes." },
-    { icon: '🖼️', title: "Image Color Extractor", text: "Upload an image to extract the main colors. Toggle the image preview and copy or download your palette." },
-    { icon: '🌗', title: "Shades & Tints Generator", text: "Generate lighter and darker versions of a color to build a complete palette with shades and tints." },
-    { icon: '💾', title: "Export Options", text: "Export your current palette or gradient as a text file, JSON, or PNG gradient image." },
-    { icon: '💻', title: "Developer Tools Links", text: "Quick links to useful tools like Figma, VS Code, GitHub, React, MDN, WCAG guidelines, Tailwind, and more." },
-    { icon: '📩', title: "Feedback & Contact", text: "Use the contact form to send feedback or report issues directly to us via email." }
-  ];
-
-  let currentStep = 0;
-
-  function updateHelpContent() {
-    const step = helpSteps[currentStep];
-    helpTitle.textContent = step.title;
-    helpText.textContent = step.text;
-    helpIcon.textContent = step.icon;
-
-    prevStepBtn.disabled = currentStep === 0;
-    nextStepBtn.disabled = currentStep === helpSteps.length - 1;
-  }
-
-  // Open Help Overlay
-  openHelpBtn.addEventListener('click', () => {
-    helpOverlay.style.display = 'flex';
-    updateHelpContent();
-  });
-
-  // Close Help Overlay
-  closeHelpBtn.addEventListener('click', () => {
-    helpOverlay.style.display = 'none';
-  });
-
-  // Previous Step
-  prevStepBtn.addEventListener('click', () => {
-    if (currentStep > 0) {
-      currentStep--;
-      updateHelpContent();
-    }
-  });
-
-  // Next Step
-  nextStepBtn.addEventListener('click', () => {
-    if (currentStep < helpSteps.length - 1) {
-      currentStep++;
-      updateHelpContent();
-    }
-  });
-});
-/* =========================================================================
-   Background Remover - Complete JS
-   Features:
-   - Shared #img_input with Image Extractor
-   - API remove.bg background removal
-   - Draggable circular eraser (smooth follow)
-   - Undo / Redo
-   - Download
-   - Adjustable eraser size
-   - Notifications integrated with showNotification()
-   ========================================================================= */
-
-const REMOVE_BG_API_KEY = ""; // <-- Paste your remove.bg API key here
-
-// DOM Elements
-const imgInput = document.getElementById("img_input");
-const bgCanvas = document.getElementById("bg_canvas");
-const ctx = bgCanvas.getContext("2d");
-
-const removeBgBtn = document.getElementById("remove_bg_btn");
-const eraserToggleBtn = document.getElementById("eraser_btn"); 
-const undoBtn = document.getElementById("undo_btn");
-const redoBtn = document.getElementById("redo_btn");
-const downloadBtn = document.getElementById("download_bg_removed");
-const eraserSizeInput = document.getElementById("eraser_size");
-
-// State
-let currentFile = null;
-let originalImg = null;
-let drawing = false;
-let eraserActive = false;
-let eraserSize = parseInt(eraserSizeInput.value, 10);
-let mousePos = { x: 0, y: 0 };
-let history = [];
-let redoStack = [];
-
-/* -------------------- Checkerboard Background -------------------- */
-function drawCheckerboard() {
-  const size = 20;
-  for (let y = 0; y < bgCanvas.height; y += size) {
-    for (let x = 0; x < bgCanvas.width; x += size) {
-      ctx.fillStyle = (x / size + y / size) % 2 === 0 ? "#eee" : "#ccc";
-      ctx.fillRect(x, y, size, size);
-    }
-  }
-}
-
-/* -------------------- Save / Load State -------------------- */
-function saveState() {
-  history.push(bgCanvas.toDataURL());
-  redoStack = [];
-}
-
-function loadState(dataUrl) {
-  const img = new Image();
-  img.onload = () => {
-    drawCheckerboard();
-    ctx.drawImage(img, 0, 0);
-  };
-  img.src = dataUrl;
-}
-
-/* -------------------- Load Image -------------------- */
-function loadImageToCanvas(file) {
-  const reader = new FileReader();
-  reader.onload = (e) => {
-    const img = new Image();
-    img.onload = () => {
-      bgCanvas.width = img.width;
-      bgCanvas.height = img.height;
-      drawCheckerboard();
-      ctx.drawImage(img, 0, 0);
-      originalImg = img;
-      saveState();
-    };
-    img.src = e.target.result;
-  };
-  reader.readAsDataURL(file);
-}
-
-/* -------------------- Background Removal API -------------------- */
-let bgOverlay = document.createElement("div");
-bgOverlay.id = "bg_processing_overlay";
-bgOverlay.style.position = "absolute";
-bgOverlay.style.background = "rgba(0,0,0,0.4)";
-bgOverlay.style.display = "none";
-bgOverlay.style.zIndex = "999";
-bgOverlay.style.pointerEvents = "none";
-bgOverlay.style.color = "white";
-bgOverlay.style.fontSize = "20px";
-bgOverlay.style.fontWeight = "bold";
-bgOverlay.style.justifyContent = "center";
-bgOverlay.style.alignItems = "center";
-bgOverlay.style.display = "flex";
-bgOverlay.textContent = "⏳ Processing...";
-document.body.appendChild(bgOverlay);
-
-function updateOverlaySize() {
-  const rect = bgCanvas.getBoundingClientRect();
-  bgOverlay.style.width = rect.width + "px";
-  bgOverlay.style.height = rect.height + "px";
-  bgOverlay.style.left = rect.left + "px";
-  bgOverlay.style.top = rect.top + "px";
-}
-
-function showBgOverlay() {
-  updateOverlaySize();
-  bgOverlay.style.display = "flex";
-}
-
-function hideBgOverlay() {
-  bgOverlay.style.display = "none";
-}
-
-async function tryApiRemoveBg(file) {
-  if (!REMOVE_BG_API_KEY) {
-    showNotification("⚠️ API key not set");
-    return false;
-  }
-
-  showBgOverlay();
-  showNotification("⏳ Removing background...");
-
-  try {
-    const formData = new FormData();
-    formData.append("image_file", file);
-
-    const response = await fetch("https://api.remove.bg/v1.0/removebg", {
-      method: "POST",
-      headers: { "X-Api-Key": REMOVE_BG_API_KEY },
-      body: formData,
-    });
-
-    if (!response.ok) throw new Error("API failed");
-
-    const blob = await response.blob();
-    const img = new Image();
-    img.onload = () => {
-      bgCanvas.width = img.width;
-      bgCanvas.height = img.height;
-      drawCheckerboard();
-      ctx.drawImage(img, 0, 0);
-      saveState();
-      hideBgOverlay();
-      showNotification("✅ Background removed!");
-    };
-    img.src = URL.createObjectURL(blob);
-
-    return true;
-  } catch (err) {
-    hideBgOverlay();
-    showNotification("❌ Background removal failed");
-    console.warn("API error:", err);
-    return false;
-  }
-}
-
-/* -------------------- Eraser -------------------- */
-function toggleEraser() {
-  eraserActive = !eraserActive;
-  if (eraserActive) {
-    eraserToggleBtn.textContent = "Stop Erasing";
-    bgCanvas.style.cursor = "none";
-    bgCanvas.addEventListener("mousedown", startDrawing);
-    bgCanvas.addEventListener("mousemove", updateMouse);
-    bgCanvas.addEventListener("mousemove", drawPreview);
-    bgCanvas.addEventListener("mouseup", stopDrawing);
-    bgCanvas.addEventListener("mouseleave", stopDrawing);
-  } else {
-    eraserToggleBtn.textContent = "Start Erasing";
-    bgCanvas.style.cursor = "default";
-    bgCanvas.removeEventListener("mousedown", startDrawing);
-    bgCanvas.removeEventListener("mousemove", updateMouse);
-    bgCanvas.removeEventListener("mousemove", drawPreview);
-    bgCanvas.removeEventListener("mouseup", stopDrawing);
-    bgCanvas.removeEventListener("mouseleave", stopDrawing);
-    redrawCanvas();
-  }
-}
-
-function updateMouse(e) {
-  const rect = bgCanvas.getBoundingClientRect();
-  mousePos.x = e.clientX - rect.left;
-  mousePos.y = e.clientY - rect.top;
-}
-
-function startDrawing(e) {
-  drawing = true;
-  drawEraser();
-}
-
-function drawEraser() {
-  if (!drawing) return;
-  ctx.save();
-  ctx.globalCompositeOperation = "destination-out";
-  ctx.beginPath();
-  ctx.arc(mousePos.x, mousePos.y, eraserSize / 2, 0, Math.PI * 2);
-  ctx.fill();
-  ctx.restore();
-  requestAnimationFrame(drawEraser); // smooth continuous erasing
-}
-
-function stopDrawing() {
-  if (drawing) {
-    drawing = false;
-    saveState();
-  }
-}
-
-function drawPreview() {
-  if (!eraserActive || drawing || !history.length) return;
-  redrawCanvas();
-  ctx.save();
-  ctx.strokeStyle = "red";
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.arc(mousePos.x, mousePos.y, eraserSize / 2, 0, Math.PI * 2);
-  ctx.stroke();
-  ctx.restore();
-}
-
-function redrawCanvas() {
-  if (history.length) loadState(history[history.length - 1]);
-}
-
-/* -------------------- Undo / Redo -------------------- */
-function undo() {
-  if (history.length > 1) {
-    redoStack.push(history.pop());
-    loadState(history[history.length - 1]);
-  }
-}
-
-function redo() {
-  if (redoStack.length > 0) {
-    const data = redoStack.pop();
-    history.push(data);
-    loadState(data);
-  }
-}
-
-/* -------------------- Download -------------------- */
-function downloadImage() {
-  const link = document.createElement("a");
-  link.download = "bg_removed.png";
-  link.href = bgCanvas.toDataURL("image/png");
-  link.click();
-}
-
-/* -------------------- Event Listeners -------------------- */
-eraserToggleBtn.addEventListener("click", toggleEraser);
-undoBtn.addEventListener("click", undo);
-redoBtn.addEventListener("click", redo);
-downloadBtn.addEventListener("click", downloadImage);
-eraserSizeInput.addEventListener("input", (e) => {
-  eraserSize = parseInt(e.target.value, 10);
-});
-
-removeBgBtn.addEventListener("click", async () => {
-  if (!currentFile) return showNotification("⚠️ Upload an image first");
-  await tryApiRemoveBg(currentFile);
-});
-
-imgInput.addEventListener("change", (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  currentFile = file;
-  loadImageToCanvas(file);
-});
-
-/* -------------------- Window resize for overlay -------------------- */
-window.addEventListener("resize", () => {
-  if (bgOverlay.style.display === "flex") {
-    updateOverlaySize();
-  }
-});
-
-/* ==================================
-   Export Functions (Palette + Gradient)
-   ================================== */
-
-/**
- * Helper: Trigger download from Blob
- */
-function downloadBlob(content, filename, type) {
-  const blob = new Blob([content], { type });
-  const link = document.createElement("a");
-  link.download = filename;
-  link.href = URL.createObjectURL(blob);
-  link.click();
-  URL.revokeObjectURL(link.href);
-}
-
-/**
- * Helper: Get palette colors
- * - Looks for .color-box elements
- * - Uses data-color if available, otherwise style.backgroundColor
- */
-function getPaletteColors() {
-  return Array.from(document.querySelectorAll(".color-box"))
-    .map(box => box.dataset.color || box.style.backgroundColor)
-    .filter(color => !!color); // remove empty
-}
-
-/* ----------------------------
-   Export Palette as PNG
----------------------------- */
-document.getElementById("export-palette-png")?.addEventListener("click", () => {
-  const paletteDiv = document.getElementById("palette-preview");
-  if (!paletteDiv) {
-    alert("Palette preview not found.");
-    return;
-  }
-
-  html2canvas(paletteDiv).then(canvas => {
-    const link = document.createElement("a");
-    link.download = "palette.png";
-    link.href = canvas.toDataURL("image/png");
-    link.click();
-  });
-});
-
-/* ----------------------------
-   Export Palette as JSON
----------------------------- */
-document.getElementById("export-palette-json")?.addEventListener("click", () => {
-  const colors = getPaletteColors();
-  if (!colors.length) {
-    alert("No colors found in palette.");
-    return;
-  }
-  const jsonContent = JSON.stringify(colors, null, 2);
-  downloadBlob(jsonContent, "palette.json", "application/json");
-});
-
-/* ----------------------------
-   Export Palette as CSS Variables
----------------------------- */
-document.getElementById("export-palette-css")?.addEventListener("click", () => {
-  const colors = getPaletteColors();
-  if (!colors.length) {
-    alert("No colors found in palette.");
-    return;
-  }
-  const cssLines = colors.map((c, i) => `  --color-${i + 1}: ${c};`);
-  const cssText = `:root {\n${cssLines.join("\n")}\n}`;
-  downloadBlob(cssText, "palette.css", "text/css");
-});
-/* ========== Export Module JS ========== */
-/* Put this file after your main script or append to script.js (must run after DOM ready). */
-
+/* Color World — Unified app script
+   - Palette manager (add/apply/delete/select/drag/persist)
+   - Exports (PNG / JSON / CSS / gradient)
+   - Coloris init
+   - Advanced Harmony (chroma.js optional)
+   - Preview & tooltips & help overlay
+   Drop this in as one script (replace your old script files).
+*/
 (() => {
-  // small helper: prefer your existing toast() if present, otherwise fallback to alert()
-  const notify = (msg) => { if (typeof toast === 'function') toast(msg); else alert(msg); };
+  'use strict';
 
-  function downloadBlob(content, filename, type) {
-    const blob = new Blob([content], { type });
-    const link = document.createElement('a');
-    link.download = filename;
-    link.href = URL.createObjectURL(blob);
-    link.click();
-    URL.revokeObjectURL(link.href);
+  // ---------- Helpers ----------
+  const $ = (sel, ctx = document) => ctx.querySelector(sel);
+  const $$ = (sel, ctx = document) => Array.from((ctx || document).querySelectorAll(sel));
+
+  // Toast: uses #toast if present else alert fallback
+  const toastEl = $('#toast');
+  function showToast(msg, ms = 1600) {
+    if (toastEl) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toastEl.classList.remove('show'), ms);
+    } else {
+      // fallback to console + alert to be safe (non-blocking)
+      console.log('[toast]', msg);
+      // don't alert in production automatically to avoid annoyance, only when no UI toast
+      //alert(msg);
+    }
   }
 
-  // Read palette colors from #palette .color-box
-  function getPaletteColors() {
-    const boxes = Array.from(document.querySelectorAll('#palette .color-box'));
-    const colors = boxes.map(box => {
-      // prefer dataset.hex or data-hex or data-color if set by your main script
-      const ds = box.dataset;
-      const hex = ds.hex || ds.color || ds.value || ds.hexcode || ds.hexCode || null;
-      if (hex) return hex;
-      // otherwise get computed background color and convert to hex if needed
-      const bg = window.getComputedStyle(box).backgroundColor;
-      return rgbStringToHex(bg);
-    }).filter(Boolean);
-    return colors;
+  // Normalize color to #RRGGBB (uppercase) or return null
+  function normalizeColor(input) {
+    if (!input && input !== '') return null;
+    const s = input.trim();
+    if (!s) return null;
+
+    // direct hex (#RGB or #RRGGBB)
+    const hex3 = /^#?([0-9a-f]{3})$/i;
+    const hex6 = /^#?([0-9a-f]{6})$/i;
+    if (hex6.test(s)) {
+      const m = s.match(hex6)[1];
+      return '#' + m.toUpperCase();
+    }
+    if (hex3.test(s)) {
+      const m = s.match(hex3)[1];
+      return '#' + (m.split('').map(c => c + c).join('')).toUpperCase();
+    }
+
+    // if chroma.js is available, use it (accepts names / rgb / hsl / css)
+    try {
+      if (typeof chroma !== 'undefined' && chroma.valid(s)) {
+        return chroma(s).hex().toUpperCase();
+      }
+    } catch (e) {
+      // continue to fallback
+    }
+
+    // fallback: use browser CSS parsing, then convert rgb(...) to hex
+    try {
+      const test = new Option().style;
+      test.color = '';
+      test.color = s;
+      if (!test.color) return null; // invalid
+      // computed color will be like "rgb(12, 34, 56)" or "rgba(...)"
+      const computed = test.color;
+      return rgbStringToHex(computed);
+    } catch (e) {
+      return null;
+    }
   }
 
-  // convert "rgb(12,34,56)" or "rgba(...)" to "#0c2238"
+  // Accepts "rgb(...)" or "rgba(...)" or hex -> returns uppercase #RRGGBB or null
   function rgbStringToHex(rgb) {
     if (!rgb) return null;
-    // already hex?
-    if (/^#/.test(rgb.trim())) return rgb.trim();
     const m = rgb.match(/\d+/g);
     if (!m || m.length < 3) return null;
     const r = parseInt(m[0], 10), g = parseInt(m[1], 10), b = parseInt(m[2], 10);
-    return '#' + [r,g,b].map(v => v.toString(16).padStart(2,'0')).join('');
+    return '#' + [r, g, b].map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
   }
 
-  // --- Export Palette PNG (screenshot of #palette) ---
-  const btnPalettePNG = document.getElementById('export-palette-png');
-  if (btnPalettePNG) {
-    btnPalettePNG.addEventListener('click', () => {
-      const paletteEl = document.getElementById('palette');
-      if (!paletteEl) return notify('Palette element not found (#palette).');
+  function isValidHex(s) {
+    return /^#([0-9A-F]{6})$/i.test((s || '').trim());
+  }
 
-      if (typeof html2canvas === 'undefined') {
-        notify('html2canvas is required to export PNG. Include the library.');
-        return;
+  function isValidColor(s) {
+    return Boolean(normalizeColor(s));
+  }
+
+  function randomColor() {
+    return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0').toUpperCase();
+  }
+
+  // Readable text contrast: returns '#000' or '#fff'
+  function getReadableText(hex) {
+    if (!hex) return '#000';
+    let lum = 0;
+    try {
+      if (typeof chroma !== 'undefined' && chroma.valid(hex)) {
+        lum = chroma(hex).luminance();
+      } else {
+        // approximate luminance from rgb
+        const [r, g, b] = hexToRgb(hex).map(v => v / 255).map(v => v <= 0.03928 ? v / 12.92 : Math.pow((v + 0.055) / 1.055, 2.4));
+        lum = 0.2126 * r + 0.7152 * g + 0.0722 * b;
       }
+    } catch (e) {
+      lum = 1;
+    }
+    return lum > 0.45 ? '#000' : '#fff';
+  }
 
-      html2canvas(paletteEl, { backgroundColor: null, scale: 2 }).then(canvas => {
+  function hexToRgb(hex) {
+    if (!hex) return [0, 0, 0];
+    let h = hex.replace('#', '');
+    if (h.length === 3) h = h.split('').map(ch => ch + ch).join('');
+    return [parseInt(h.slice(0, 2), 16), parseInt(h.slice(2, 4), 16), parseInt(h.slice(4, 6), 16)];
+  }
+
+  // Downloads a blob
+  function downloadBlob(content, filename, type) {
+    const blob = new Blob([content], { type });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  // ---------- DOM ready single init ----------
+  document.addEventListener('DOMContentLoaded', () => {
+    // Elements (may not exist; check)
+    const paletteEl = $('#palette');
+    const hexInput = $('#hex-input');
+    const applyHexBtn = $('#applyHex');
+    const addSwatchBtn = $('#addSwatch');
+    const clearPaletteBtn = $('#clearPalette');
+
+    // If palette area missing, we still continue but many features will be quiet
+    if (!paletteEl) {
+      console.warn('Palette container (#palette) not found — palette features disabled');
+    }
+
+    // Init Coloris safely if available
+    try {
+      if (typeof Coloris !== 'undefined') {
+        Coloris({
+          el: 'input[type="color"]',
+          theme: 'large',
+          wrap: true
+        });
+      }
+    } catch (e) {
+      console.warn('Coloris init failed', e);
+    }
+
+    // ---------- Palette manager ----------
+    const STORAGE_KEY = 'cw_current_palette';
+
+    function persistPalette() {
+      if (!paletteEl) return;
+      const colors = Array.from(paletteEl.querySelectorAll('.color-box')).map(b => b.dataset.hex);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(colors));
+    }
+
+    function loadPersistedPalette() {
+      if (!paletteEl) return;
+      paletteEl.innerHTML = '';
+      let saved = null;
+      try {
+        saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || 'null');
+      } catch { saved = null; }
+      if (Array.isArray(saved) && saved.length) {
+        saved.forEach(hex => paletteEl.appendChild(createColorBox(hex)));
+      } else {
+        // fallback defaults (keeps your original defaults)
+        ['#e2ab21', '#84b96a', '#fa5822', '#6dee23', '#6c63ff', '#03a9f4'].forEach(h => paletteEl.appendChild(createColorBox(h)));
+        persistPalette();
+      }
+    }
+
+    // create UI swatch element
+    function createColorBox(hex) {
+      const norm = normalizeColor(hex) || randomColor();
+      const box = document.createElement('div');
+      box.className = 'color-box';
+      box.tabIndex = 0;
+      box.draggable = true;
+      box.dataset.hex = norm;
+      box.style.background = norm;
+      // structure: copy label + delete + lock (left delete, right lock)
+      box.innerHTML = `
+        <span class="copy">${norm}</span>
+        <button class="delete-btn" title="Remove">&times;</button>
+        <div class="lock-toggle" title="Lock / unlock">🔓</div>
+      `;
+      return box;
+    }
+
+   
+    // ---------- Export module ----------
+    function getPaletteColors() {
+      if (!paletteEl) return [];
+      return Array.from(paletteEl.querySelectorAll('.color-box')).map(b => b.dataset.hex || rgbStringToHex(window.getComputedStyle(b).backgroundColor)).filter(Boolean);
+    }
+
+    // Palette PNG (requires html2canvas)
+    $('#export-palette-png')?.addEventListener('click', async () => {
+      const el = $('#palette');
+      if (!el) return showToast('Palette element not found');
+      if (typeof html2canvas === 'undefined') return showToast('html2canvas required for PNG export');
+      try {
+        const canvas = await html2canvas(el, { backgroundColor: null, scale: 2 });
         const link = document.createElement('a');
         link.download = 'palette.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
-        notify('Palette PNG downloaded.');
-      }).catch(err => {
-        console.error(err);
-        notify('Failed to export palette PNG.');
-      });
+        showToast('Palette PNG downloaded');
+      } catch (err) {
+        console.error(err); showToast('Failed to export PNG');
+      }
     });
-  }
 
-  // --- Export Palette JSON ---
-  const btnPaletteJSON = document.getElementById('export-palette-json');
-  if (btnPaletteJSON) {
-    btnPaletteJSON.addEventListener('click', () => {
+    // Palette JSON
+    $('#export-palette-json')?.addEventListener('click', () => {
       const colors = getPaletteColors();
-      if (!colors.length) return notify('No colors found to export.');
+      if (!colors.length) return showToast('No colors to export');
       downloadBlob(JSON.stringify(colors, null, 2), 'palette.json', 'application/json');
-      notify('Palette JSON downloaded.');
+      showToast('Palette JSON downloaded');
     });
-  }
 
-  // --- Export Palette CSS Variables ---
-  const btnPaletteCSS = document.getElementById('export-palette-css');
-  if (btnPaletteCSS) {
-    btnPaletteCSS.addEventListener('click', () => {
+    // Palette CSS variables
+    $('#export-palette-css')?.addEventListener('click', () => {
       const colors = getPaletteColors();
-      if (!colors.length) return notify('No colors found to export.');
-      const lines = colors.map((c, i) => `  --color-${i+1}: ${c};`);
-      const css = `:root {\n${lines.join('\n')}\n}\n`;
+      if (!colors.length) return showToast('No colors to export');
+      const css = `:root {\n${colors.map((c, i) => `  --color-${i+1}: ${c};`).join('\n')}\n}\n`;
       downloadBlob(css, 'palette.css', 'text/css');
-      notify('Palette CSS downloaded.');
+      showToast('Palette CSS downloaded');
     });
-  }
 
-  // --- Export Gradient: PNG screenshot (from generator) + CSS file ---
-  const btnGradient = document.getElementById('export-gradient');
-  if (btnGradient) {
-    btnGradient.addEventListener('click', async () => {
-      // 1) find the gradient preview used by the generator
-      let gradientEl = document.querySelector('#gradient-preview'); // your generator uses this id
-      // If there are multiple, prefer the one inside the tools/generator section (heuristic)
-      if (document.querySelector('#tools #gradient-preview')) {
-        gradientEl = document.querySelector('#tools #gradient-preview');
-      }
-
-      if (!gradientEl) {
-        notify('Gradient preview element not found (#gradient-preview).');
-        return;
-      }
-
-      if (typeof html2canvas === 'undefined') {
-        notify('html2canvas is required to export PNG. Include the library.');
-        return;
-      }
-
+    // Gradient export (PNG + CSS)
+    $('#export-gradient')?.addEventListener('click', async () => {
+      const gradientEl = $('#gradient-preview') || $('.gradient-preview');
+      if (!gradientEl) return showToast('Gradient preview element not found');
+      if (typeof html2canvas === 'undefined') return showToast('html2canvas required for PNG export');
       try {
-        // Screenshot PNG
         const canvas = await html2canvas(gradientEl, { backgroundColor: null, scale: 2 });
         const link = document.createElement('a');
         link.download = 'gradient.png';
         link.href = canvas.toDataURL('image/png');
         link.click();
-        notify('Gradient PNG downloaded.');
-      } catch (err) {
-        console.error('Gradient PNG export failed:', err);
-        notify('Failed to export gradient PNG.');
-      }
+        showToast('Gradient PNG downloaded');
+      } catch (err) { console.error(err); showToast('Failed to export gradient PNG'); }
 
-      // Now build CSS for the gradient
-      // Prefer computed style background-image; fallback to generator inputs if computed style is plain color
       const computed = window.getComputedStyle(gradientEl).backgroundImage;
-
       let cssGradient = '';
-
-      if (computed && computed !== 'none' && computed.includes('gradient')) {
-        // use computed background (this will typically be like 'linear-gradient(...)')
+      if (computed && computed.toLowerCase().includes('gradient')) {
         cssGradient = computed;
       } else {
-        // fallback: build from generator inputs
-        const c1 = (document.getElementById('gradColor1') && document.getElementById('gradColor1').value) || null;
-        const c2 = (document.getElementById('gradColor2') && document.getElementById('gradColor2').value) || null;
-        const angle = (document.getElementById('gradAngle') && document.getElementById('gradAngle').value) || '90';
-        if (c1 && c2) {
-          cssGradient = `linear-gradient(${angle}deg, ${c1}, ${c2})`;
-        }
+        const c1 = $('#gradColor1')?.value, c2 = $('#gradColor2')?.value, angle = $('#gradAngle')?.value || 90;
+        if (c1 && c2) cssGradient = `linear-gradient(${angle}deg, ${c1}, ${c2})`;
       }
-
       if (cssGradient) {
-        const cssContent = `.gradient-preview {\n  background: ${cssGradient};\n}\n`;
-        downloadBlob(cssContent, 'gradient.css', 'text/css');
-        notify('Gradient CSS downloaded.');
-      } else {
-        notify('Unable to determine gradient CSS to export.');
-      }
+        downloadBlob(`.gradient-preview { background: ${cssGradient}; }`, 'gradient.css', 'text/css');
+        showToast('Gradient CSS downloaded');
+      } else showToast('Unable to determine CSS gradient');
     });
+
+    // ---------- Harmony (advanced) ----------
+    function generateHarmony(base, mode = 'complementary') {
+      const baseHex = normalizeColor(base) || '#FF6600';
+      try {
+        if (typeof chroma !== 'undefined') {
+          switch (mode) {
+            case 'complementary':
+              return [baseHex, chroma(baseHex).set('hsl.h', '+180').hex().toUpperCase()];
+            case 'analogous':
+              return chroma.scale([chroma(baseHex).set('hsl.h', '-30'), baseHex, chroma(baseHex).set('hsl.h', '+30')]).mode('lch').colors(5).map(h => h.toUpperCase());
+            case 'triadic':
+              return [baseHex, chroma(baseHex).set('hsl.h', '+120').hex().toUpperCase(), chroma(baseHex).set('hsl.h', '+240').hex().toUpperCase()];
+            case 'split-complementary':
+              return [baseHex, chroma(baseHex).set('hsl.h', '+150').hex().toUpperCase(), chroma(baseHex).set('hsl.h', '+210').hex().toUpperCase()];
+            case 'tetradic':
+              return [baseHex, chroma(baseHex).set('hsl.h', '+90').hex().toUpperCase(), chroma(baseHex).set('hsl.h', '+180').hex().toUpperCase(), chroma(baseHex).set('hsl.h', '+270').hex().toUpperCase()];
+            case 'monochrome':
+            case 'monochromatic':
+              return chroma.scale([chroma(baseHex).brighten(2), baseHex, chroma(baseHex).darken(2)]).mode('lab').colors(5).map(h => h.toUpperCase());
+            default:
+              return [baseHex];
+          }
+        } else {
+          // chroma not present — fallback simple HSL manip
+          const [h, s, l] = hexToHsl(baseHex);
+          const hplus = (n) => ((h + n + 360) % 360);
+          switch (mode) {
+            case 'complementary': return [baseHex, hslToHex(hplus(180), s, l)];
+            case 'analogous': return [hslToHex(hplus(-30), s, l), baseHex, hslToHex(hplus(30), s, l)];
+            case 'triadic': return [baseHex, hslToHex(hplus(120), s, l), hslToHex(hplus(240), s, l)];
+            case 'tetradic': return [baseHex, hslToHex(hplus(90), s, l), hslToHex(hplus(180), s, l), hslToHex(hplus(270), s, l)];
+            case 'monochrome':
+            case 'monochromatic':
+              return [hslToHex(h, s, Math.min(100, l + 20)), baseHex, hslToHex(h, s, Math.max(0, l - 20))];
+            default:
+              return [baseHex];
+          }
+        }
+      } catch (e) {
+        console.warn('generateHarmony failed', e);
+        return [baseHex];
+      }
+    }
+
+    // small HSL helpers for fallback
+    function hexToHsl(hex) {
+      const [r, g, b] = hexToRgb(hex).map(v => v / 255);
+      const max = Math.max(r, g, b), min = Math.min(r, g, b);
+      let h = 0, s = 0, l = (max + min) / 2;
+      if (max !== min) {
+        const d = max - min;
+        s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
+        switch (max) {
+          case r: h = (g - b) / d + (g < b ? 6 : 0); break;
+          case g: h = (b - r) / d + 2; break;
+          case b: h = (r - g) / d + 4; break;
+        }
+        h /= 6;
+      }
+      return [Math.round(h * 360), Math.round(s * 100), Math.round(l * 100)];
+    }
+    function hslToHex(h, s, l) {
+      s /= 100; l /= 100;
+      const c = (1 - Math.abs(2 * l - 1)) * s;
+      const x = c * (1 - Math.abs((h / 60) % 2 - 1));
+      const m = l - c / 2;
+      let [r, g, b] = [0,0,0];
+      if (h < 60) [r,g,b] = [c,x,0];
+      else if (h < 120) [r,g,b] = [x,c,0];
+      else if (h < 180) [r,g,b] = [0,c,x];
+      else if (h < 240) [r,g,b] = [0,x,c];
+      else if (h < 300) [r,g,b] = [x,0,c];
+      else [r,g,b] = [c,0,x];
+      return '#' + [r,g,b].map(v => Math.round((v + m) * 255).toString(16).padStart(2, '0')).join('').toUpperCase();
+    }
+
+    function renderHarmony(colors = []) {
+      const grid = $('#harmony_grid') || $('#harmony-swatches');
+      if (!grid) { console.warn('harmony grid not found'); return; }
+      grid.innerHTML = '';
+      colors.forEach(hex => {
+        const d = document.createElement('div');
+        d.className = 'shade-box';
+        d.style.background = hex;
+        d.textContent = hex;
+        d.title = hex;
+        d.addEventListener('click', () => {
+          const normalized = normalizeColor(hex);
+          if (normalized) {
+            if (paletteEl) {
+              // add to palette on ctrl/shift click, otherwise copy
+              if (event?.ctrlKey || event?.metaKey) {
+                paletteEl.appendChild(createColorBox(normalized));
+                persistPalette();
+                showToast('Added ' + normalized);
+                return;
+              }
+            }
+            navigator.clipboard?.writeText(normalized).then(() => showToast(normalized + ' copied'));
+          }
+        });
+        grid.appendChild(d);
+      });
+    }
+
+    // Hook generate & copy buttons
+    $('#h_generate')?.addEventListener('click', () => {
+      const base = $('#h_base')?.value || '#FF6600';
+      const mode = $('#h_mode')?.value || 'complementary';
+      const colors = generateHarmony(base, mode);
+      renderHarmony(colors);
+      showToast('Harmony generated');
+    });
+
+    $('#h_copy')?.addEventListener('click', () => {
+      const grid = $('#harmony_grid') || $('#harmony-swatches');
+      if (!grid) return showToast('No harmony grid to copy from');
+      const colors = Array.from(grid.querySelectorAll('.shade-box')).map(d => d.textContent.trim());
+      if (!colors.length) return showToast('No colors to copy');
+      navigator.clipboard?.writeText(colors.join(', ')).then(() => showToast('Harmony copied'));
+    });
+
+    // Keyboard shortcuts for harmony shortcuts
+    document.addEventListener('keydown', (e) => {
+      if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
+      if (e.key.toLowerCase() === 'h') $('#h_generate')?.click();
+      if (e.key.toLowerCase() === 'c') $('#h_copy')?.click();
+    });
+
+    // If harmony grid empty at load, generate once (safe)
+    try {
+      if ($('#harmony_grid') && $('#harmony_grid').children.length === 0) {
+        const base = $('#h_base')?.value || '#ff6600';
+        const mode = $('#h_mode')?.value || 'complementary';
+        renderHarmony(generateHarmony(base, mode));
+      }
+    } catch (e) { /* ignore */ }
+
+    // ---------- Help overlay / walkthrough ----------
+    const openHelpBtn = $('#open-help'), helpOverlay = $('#help-overlay'), closeHelpBtn = $('#close-help');
+    const prevStepBtn = $('#prev-step'), nextStepBtn = $('#next-step');
+    if (openHelpBtn && helpOverlay) {
+      const helpSteps = [
+        { icon: '🎨', title: "Welcome", text: "Welcome to Color World! Explore palettes, gradients, and contrast tools." },
+        { icon: '🖌️', title: "Palette", text: "Generate or add colors. Click to select multiple. Apply colors to selected swatches." },
+        { icon: '🌈', title: "Gradient", text: "Adjust gradient stops and export as PNG/CSS." },
+        { icon: '🎼', title: "Harmony", text: "Generate harmonies from base color using the Harmony tool." },
+        { icon: '🖼️', title: "Image extractor", text: "Upload images and extract palette (in the Image Extractor tab)." }
+      ];
+      let stepIdx = 0;
+      const helpTitle = $('#help-title'), helpText = $('#help-text'), helpIcon = $('#help-icon');
+      function updateHelp() {
+        const s = helpSteps[stepIdx];
+        if (helpTitle) helpTitle.textContent = s.title;
+        if (helpText) helpText.textContent = s.text;
+        if (helpIcon) helpIcon.textContent = s.icon;
+        if (prevStepBtn) prevStepBtn.disabled = stepIdx === 0;
+        if (nextStepBtn) nextStepBtn.disabled = stepIdx === helpSteps.length - 1;
+      }
+      openHelpBtn.addEventListener('click', () => { helpOverlay.style.display = 'flex'; stepIdx = 0; updateHelp(); });
+      closeHelpBtn?.addEventListener('click', ()=> helpOverlay.style.display = 'none');
+      prevStepBtn?.addEventListener('click', ()=> { if(stepIdx>0){ stepIdx--; updateHelp(); } });
+      nextStepBtn?.addEventListener('click', ()=> { if(stepIdx<helpSteps.length-1){ stepIdx++; updateHelp(); } });
+    }
+
+    // ---------- Safety: expose some helpers if you want in devtools ----------
+    window.CW = window.CW || {};
+    Object.assign(window.CW, {
+      normalizeColor, randomColor, getPaletteColors, persistPalette, loadPersistedPalette, generateHarmony, renderHarmony
+    });
+
+    // Done DOMContentLoaded
+  }); // end DOMContentLoaded
+
+})(); // end IIFE
+(() => {
+  'use strict';
+
+  // ---------- Helpers ----------
+  const $ = (sel, ctx = document) => ctx.querySelector(sel);
+  const $$ = (sel, ctx = document) => Array.from((ctx || document).querySelectorAll(sel));
+
+  // Toast
+  const toastEl = $('#toast');
+  function showToast(msg, ms = 1600) {
+    if (toastEl) {
+      toastEl.textContent = msg;
+      toastEl.classList.add('show');
+      clearTimeout(showToast._t);
+      showToast._t = setTimeout(() => toastEl.classList.remove('show'), ms);
+    } else {
+      console.log('[toast]', msg);
+    }
   }
 
+  // Color helpers
+  function normalizeColor(input) {
+    if (!input && input !== '') return null;
+    const s = input.trim();
+    if (!s) return null;
+
+    const hex3 = /^#?([0-9a-f]{3})$/i;
+    const hex6 = /^#?([0-9a-f]{6})$/i;
+    if (hex6.test(s)) return '#' + s.match(hex6)[1].toUpperCase();
+    if (hex3.test(s)) return '#' + s.match(hex3)[1].split('').map(c => c + c).join('').toUpperCase();
+
+    try { if (typeof chroma !== 'undefined' && chroma.valid(s)) return chroma(s).hex().toUpperCase(); } catch {}
+
+    try {
+      const test = new Option().style;
+      test.color = s;
+      if (!test.color) return null;
+      return rgbStringToHex(test.color);
+    } catch { return null; }
+  }
+
+  function rgbStringToHex(rgb) {
+    if (!rgb) return null;
+    const m = rgb.match(/\d+/g);
+    if (!m || m.length < 3) return null;
+    return '#' + [0,1,2].map(i => parseInt(m[i],10).toString(16).padStart(2,'0')).join('').toUpperCase();
+  }
+
+  function isValidColor(str) {
+    return Boolean(normalizeColor(str));
+  }
+
+  function randomColor() {
+    return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0').toUpperCase();
+  }
+
+  function hexToRgb(hex) {
+    if (!hex) return [0,0,0];
+    let h = hex.replace('#','');
+    if (h.length === 3) h = h.split('').map(c=>c+c).join('');
+    return [0,1,2].map(i => parseInt(h.slice(i*2,i*2+2),16));
+  }
+
+  function getReadableText(hex) {
+    if (!hex) return '#000';
+    let lum = 0;
+    try {
+      if (typeof chroma !== 'undefined' && chroma.valid(hex)) lum = chroma(hex).luminance();
+      else {
+        const [r,g,b] = hexToRgb(hex).map(v => v/255);
+        lum = 0.2126*r + 0.7152*g + 0.0722*b;
+      }
+    } catch { lum = 1; }
+    return lum>0.45 ? '#000':'#fff';
+  }
+
+  function downloadBlob(content, filename, type) {
+    const blob = new Blob([content], {type});
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+
+  // ---------- DOM ready ----------
+  document.addEventListener('DOMContentLoaded', () => {
+
+    const paletteEl = $('#palette');
+    const hexInput = $('#hex-input');
+    const applyBtn = $('#applyHex');
+    const addBtn = $('#addSwatch');
+    const clearBtn = $('#clearPalette');
+
+    if (!paletteEl) {
+      console.warn('Palette container not found');
+    }
+
+    try { if (typeof Coloris !== 'undefined') Coloris({ el:'input[type="color"]', theme:'large', wrap:true }); } catch {}
+
+    const STORAGE_KEY = 'cw_current_palette';
+
+    function persistPalette() {
+      if (!paletteEl) return;
+      const colors = Array.from(paletteEl.querySelectorAll('.color-box')).map(b => b.dataset.hex);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(colors));
+    }
+
+    function loadPersistedPalette() {
+      if (!paletteEl) return;
+      paletteEl.innerHTML = '';
+      let saved = null;
+      try { saved = JSON.parse(localStorage.getItem(STORAGE_KEY)||'null'); } catch { saved = null; }
+      const defaults = ['#e2ab21','#84b96a','#fa5822','#6dee23','#6c63ff','#03a9f4'];
+      (Array.isArray(saved)&&saved.length ? saved : defaults).forEach(h => paletteEl.appendChild(createColorBox(h)));
+      persistPalette();
+    }
+
+    function createColorBox(hex) {
+      const norm = normalizeColor(hex) || randomColor();
+      const box = document.createElement('div');
+      box.className = 'color-box';
+      box.tabIndex = 0;
+      box.draggable = true;
+      box.dataset.hex = norm;
+      box.style.background = norm;
+      box.innerHTML = `<span class="copy">${norm}</span><button class="delete-btn" title="Remove">&times;</button><div class="lock-toggle" title="Lock/Unlock">🔓</div>`;
+      return box;
+    }
+
+    function toggleLock(box) {
+      if (!box) return;
+      box.classList.toggle('locked');
+      const lock = box.querySelector('.lock-toggle');
+      if (lock) lock.textContent = box.classList.contains('locked') ? '🔒' : '🔓';
+    }
+
+    // ---------------- Palette events ----------------
+    if (paletteEl) {
+      // click handler
+      paletteEl.addEventListener('click', ev => {
+        const del = ev.target.closest('.delete-btn');
+        if (del) {
+          const box = del.closest('.color-box');
+          if (box && confirm('Remove this swatch?')) { box.remove(); persistPalette(); showToast('Removed'); }
+          return;
+        }
+
+        const lockBtn = ev.target.closest('.lock-toggle');
+        if (lockBtn) { toggleLock(lockBtn.closest('.color-box')); persistPalette(); return; }
+
+        const box = ev.target.closest('.color-box');
+        if (!box) return;
+
+        // immediately apply input color
+        const raw = hexInput?.value.trim();
+        if (raw && isValidColor(raw) && !box.classList.contains('locked')) {
+          let color = raw;
+          try { if (typeof chroma !== 'undefined') color = chroma(raw).hex().toUpperCase(); } catch {}
+          box.dataset.hex = color;
+          box.style.background = color;
+          const label = box.querySelector('.copy');
+          if (label) label.textContent = color;
+          persistPalette();
+          showToast(`Applied ${color}`);
+        }
+
+        // toggle selection
+        box.classList.toggle('selected');
+      });
+
+      // dblclick -> random
+      paletteEl.addEventListener('dblclick', ev => {
+        const box = ev.target.closest('.color-box');
+        if (!box || box.classList.contains('locked')) return;
+        const newHex = randomColor();
+        box.dataset.hex = newHex;
+        box.style.background = newHex;
+        const span = box.querySelector('.copy');
+        if (span) span.textContent = newHex;
+        persistPalette();
+        showToast('Replaced with ' + newHex);
+      });
+
+      // drag & drop
+      let draggedBox = null;
+      paletteEl.addEventListener('dragstart', ev => { draggedBox = ev.target.closest('.color-box'); if(draggedBox) draggedBox.classList.add('dragging'); });
+      paletteEl.addEventListener('dragend', ev => { if(draggedBox) draggedBox.classList.remove('dragging'); draggedBox=null; persistPalette(); });
+      paletteEl.addEventListener('dragover', ev => { ev.preventDefault(); if(!draggedBox) return;
+        const after = [...paletteEl.querySelectorAll('.color-box:not(.dragging)')].reduce((closest,child)=>{
+          const boxRect = child.getBoundingClientRect();
+          const offset = ev.clientX-(boxRect.left+boxRect.width/2);
+          if(offset<0 && offset>(closest.offset||-Infinity)) return {offset,element:child};
+          return closest;
+        },{offset:-Infinity}).element||null;
+        if(!after) paletteEl.appendChild(draggedBox);
+        else paletteEl.insertBefore(draggedBox,after);
+      });
+    }
+
+    // ---------------- Apply button ----------------
+    function setupApplyButton() {
+      if(!applyBtn || !hexInput || !paletteEl) return;
+      applyBtn.addEventListener('click', () => {
+        const raw = hexInput.value.trim();
+        if (!raw) return showToast('Enter a color');
+        if (!isValidColor(raw)) return showToast('Invalid color');
+        let color = raw;
+        try { if (typeof chroma !== 'undefined') color = chroma(raw).hex().toUpperCase(); } catch {}
+        const selectedBoxes = paletteEl.querySelectorAll('.color-box.selected');
+        if(!selectedBoxes.length) return showToast('No swatch selected');
+        selectedBoxes.forEach(box => { if(!box.classList.contains('locked')) { box.dataset.hex=color; box.style.background=color; const l=box.querySelector('.copy'); if(l) l.textContent=color; } });
+        persistPalette();
+        showToast(`Applied ${color} to ${selectedBoxes.length} swatch(es)`);
+      });
+    }
+
+    // ---------------- Add button ----------------
+    function setupAddButton() {
+      if(!addBtn || !hexInput || !paletteEl) return;
+      addBtn.addEventListener('click', () => {
+        const raw = hexInput.value.trim();
+        const color = normalizeColor(raw) || randomColor();
+        const box = createColorBox(color);
+        box.classList.add('selected'); // auto select
+        paletteEl.appendChild(box);
+        persistPalette();
+        showToast('Added ' + color);
+      });
+    }
+
+    // ---------------- Clear ----------------
+    clearBtn?.addEventListener('click', () => {
+      if(!paletteEl || !confirm('Clear palette?')) return;
+      paletteEl.innerHTML='';
+      ['#e2ab21','#84b96a','#fa5822','#6dee23','#6c63ff','#03a9f4'].forEach(h=>paletteEl.appendChild(createColorBox(h)));
+      persistPalette();
+      showToast('Palette reset');
+    });
+
+    // ---------------- Init ----------------
+    loadPersistedPalette();
+    setupApplyButton();
+    setupAddButton();
+
+  }); // DOMContentLoaded
+
+})(); // IIFE
+// ✅ Initialize EmailJS with your Public Key
+(function() {
+  emailjs.init("baLHDUxSd2Ur3YXFe"); 
 })();
+
+// ✅ Handle Feedback Form submission
+document.addEventListener("DOMContentLoaded", function() {
+  const form = document.getElementById("contactForm");
+
+  form.addEventListener("submit", function(event) {
+    event.preventDefault();
+
+    // EmailJS IDs
+    const serviceID = "service_lf21vws";     // Your Gmail Service
+    const templateID = "template_ezamrce";   // Your Template
+
+    // Send the form data
+    emailjs.sendForm(serviceID, templateID, this)
+      .then(() => {
+        showToast("✅ Message sent successfully!");
+        form.reset();
+      })
+      .catch((err) => {
+        console.error("❌ Failed:", err);
+        showToast("❌ Failed to send message. Check console.");
+      });
+  });
+
+  // ✅ Toast Notification
+  function showToast(message) {
+    const toast = document.getElementById("toast");
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    setTimeout(() => {
+      toast.classList.remove("show");
+    }, 4000);
+  }
+});

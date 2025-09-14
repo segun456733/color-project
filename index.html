@@ -4,6 +4,31 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Color World</title>
+  <!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+<!-- EmailJS SDK -->
+ <!-- EmailJS SDK -->
+<script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+<script src="contact.js"></script>
+
+<script type="text/javascript" src="https://cdn.emailjs.com/dist/email.min.js"></script>
+<script type="text/javascript">
+  (function(){
+      emailjs.init("YOUR_USER_ID"); // <-- Replace with your EmailJS User ID
+  })();
+</script>
+
+  <!-- Coloris (modern picker, no build) -->
+<link rel="stylesheet" href="https://unpkg.com/@melloware/coloris/dist/coloris.min.css"/>
+<script src="https://unpkg.com/@melloware/coloris/dist/coloris.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.4.2/chroma.min.js"></script>
+
+
+<!-- optional: chroma.js for advanced harmony (optional but handy) -->
+
+
 
   <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -35,10 +60,13 @@
     <nav>
       <ul id="navLinks" class="nav-links">
         <li><a href="#home">Home</a></li>
+
         <li><a href="#generator">Generator</a></li>
         <li><a href="#tools">Tools</a></li>
         <li><a href="#extra-tools">Extra</a></li>
         <li><a href="color-guide.html">Color Guide</a></li>
+        <li><a href="#Feedback">Feedback</a></li>
+
         
         
         <li><a href="#contact">Contact</a></li>
@@ -103,6 +131,14 @@
         <div class="color-box"><span class="copy">#6c63ff</span></div>
         <div class="color-box"><span class="copy">#03a9f4</span></div>
       </div>
+      <!-- ADD: Quick hex input + add swatch -->
+<div class="hex-controls" style="margin-top:12px; display:flex; gap:8px; align-items:center;">
+  <input id="hex-input" type="text" placeholder="#RRGGBB or #RGB" aria-label="Hex input" style="padding:8px;border-radius:8px;border:1px solid #ddd;width:140px;">
+  <button id="applyHex" class="btt">Apply to Selected</button>
+  <button id="addSwatch" class="btt">+ Add Swatch</button>
+  <button id="clearPalette" class="btt" title="Clear palette">Clear</button>
+</div>
+
       
       <div class="controls">
         <button id="generate-btn" class="btn">Generate Palette</button>
@@ -286,33 +322,55 @@
               <div id="cb_grid" class="color-blind-grid"></div>
             </div>
           </div>
-          <!-- ================================
-          IMAGE EXTRACTOR + BACKGROUND REMOVER
-          ================================ -->
-          <section class="tools-container">
-            <!-- IMAGE EXTRACTOR -->
-            <div class="tool" id="image_extractor">
-              <h2>🎨 Image Color Extractor</h2>
-              
-              <input type="file" id="img_input" accept="image/*">
-              <label for="img_input" class="upload-btn">Upload Image</label>
-              
-              <button id="img_toggle">Hide Image</button>
-              
-              <div class="preview-container">
-                <img id="img_preview" alt="Uploaded preview">
-              </div>
-              
-              <div id="extracted_colors"></div>
-              
-              <div class="actions">
-                <button id="ex_copy">Copy Xcode Colors</button>
-                <button id="ex_download">Download Palette</button>
-              </div>
-              
-              <canvas id="extract_canvas" style="display:none;"></canvas>
-            </div>
-            
+      <section class="tools-container">
+  <div class="tool" id="image_extractor">
+    <h2>🎨 Image Color Extractor</h2>
+    
+    <input type="file" id="img_input" accept="image/*">
+    <label for="img_input" class="upload-btn">Upload Image</label>
+    
+    <button id="img_toggle">Hide Image</button>
+    
+    <div class="preview-container" style="position:relative; display:inline-block;">
+      <img id="img_preview" alt="Uploaded preview">
+      <!-- Eyedropper overlay -->
+      <canvas id="eyedrop_canvas" style="position:absolute; top:0; left:0; cursor:crosshair;"></canvas>
+      <!-- Magnifier -->
+      <canvas id="magnifier" width="120" height="120" style="position:absolute; display:none; border:1px solid #333; z-index:10;"></canvas>
+    </div>
+   
+    <div id="extracted_colors"></div>
+
+    <label for="colorCount">Number of Colors:</label>
+    <select id="colorCount">
+      <option value="3">3</option>
+      <option value="5">5</option>
+      <option value="10" selected>10</option>
+      <option value="15">15</option>
+    </select>
+
+    <label>
+      <input type="checkbox" id="safe_colors_toggle"> Color-blind safe only
+    </label>
+
+    <div class="export-buttons">
+      <button id="ex_copy">Copy All</button>
+      <button id="ex_download">Download PNG</button>
+      <button id="ex_export_json">Export JSON</button>
+      <button id="ex_export_css">Export CSS</button>
+      <button id="ex_export_tailwind">Export Tailwind</button>
+    </div>
+
+    <p id="eyedrop_info">Hover over image to see pixel color</p>
+
+    <div id="harmonies"></div>
+
+    <!-- Hidden canvas for extraction -->
+    <canvas id="extract_canvas" style="display:none;"></canvas>
+  </div>
+</section>
+
+
             <!-- BACKGROUND REMOVER -->
             <div class="tool" id="background_remover">
               <h2>🖼️ Background Remover</h2>
@@ -388,19 +446,22 @@
           <!-- html2canvas (required) -->
           <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
           <!-- ========== End export section ========== -->
-          
-          
-          <!-- Toast Notification -->
-          <section id="contact" class="contact">
-            <h2>Feedback</h2>
-            <form id="contactForm" action="https://formspree.io/f/{form_id}" method="post">
-              <input type="text" name="name" placeholder="Your Name" required />
-              <input type="email" name="email" placeholder="Your Email" required />
-              <textarea name="message" placeholder="Your Message" required></textarea>
+     <!-- Toast Notification -->
+<section id="Feedback" class="contact">
+  <h2>Feedback</h2>
+  <form id="contactForm">
+    <input type="text" name="user_name" placeholder="Your Name" required />
+    <input type="email" name="user_email" placeholder="Your Email" required />
+    <textarea name="message" placeholder="Your Message" required></textarea>
     <button type="submit" class="btn btn-submit">Submit</button>
   </form>
-  <p class="contact-info"><i class="fa fa-paper-plane"></i> segunstar@gmail.com</p>
+  <p class="contact-info">
+    <i class="fa fa-paper-plane"></i> segunstar@gmail.com
+  </p>
 </section>
+
+<!-- Toast Box -->
+<div id="toast"></div>
 
 
 <!-- Toast Notification -->
@@ -448,11 +509,12 @@
 
 
 <!-- script -->
+ 
 
 
 
-
-
+  <script src="complete.js"></script>
+<script src="backgroundremover.js"></script>
 <script src="script.js"></script>
 <script src="contrast-advanced.js"></script>
 <script src="export-module.js"></script>
