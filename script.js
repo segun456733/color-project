@@ -1,7 +1,7 @@
 /* =========================================================================
    Color World — Ultimate Unified script.js
    Includes: splash, navbar,, live preview, gradient, contrast,
-   harmony, shades, color blindness,, contact form, help,
+   , shades, color blindness,, contact form, help,
    drag & drop, keyboard shortcuts, export, pulse/glow hover effects
    ========================================================================= */
 
@@ -188,32 +188,22 @@ document.addEventListener('DOMContentLoaded', restoreFromColorGuide);
 
   $('#export_grad_img')?.addEventListener('click',()=>{ if(!gradPreview||!gradColor1||!gradColor2||!gradAngle) return toast('No gradient to export'); const a=gradColor1.value,b=gradColor2.value,angle=parseFloat(gradAngle.value||'90'); if(!a||!b) return toast('No gradient to export'); const canvas=document.createElement('canvas'); canvas.width=1000; canvas.height=280; const ctx=canvas.getContext('2d'); const rad=angle*Math.PI/180; const x=Math.cos(rad),y=Math.sin(rad); const g=ctx.createLinearGradient(canvas.width/2-x*canvas.width/2,canvas.height/2-y*canvas.height/2,canvas.width/2+x*canvas.width/2,canvas.height/2+y*canvas.height/2); g.addColorStop(0,a); g.addColorStop(1,b); ctx.fillStyle=g; ctx.fillRect(0,0,canvas.width,canvas.height); const link=Object.assign(document.createElement('a'),{href:canvas.toDataURL('image/png'),download:'gradient.png'}); link.click(); toast('Gradient saved as PNG'); });
 /* =========================================================================
-   Harmony Generator — Advanced with chroma.js
+   Advanced Harmony & Shades Generator — with chroma.js
    ========================================================================= */
 
-// Selectors
-const harmonyBase = document.querySelector("#h_base");
-const harmonyMode = document.querySelector("#h_mode");
-const harmonyGrid = document.querySelector("#harmony_grid");
-const harmonyGenerate = document.querySelector("#h_generate");
-const harmonyCopy = document.querySelector("#h_copy");
-
-// Generate harmony colors
+// Generate harmony colors based on base color + mode
 function generateHarmony(baseHex, mode = "complementary") {
   if (!chroma.valid(baseHex)) {
     console.warn("Invalid base color:", baseHex);
     return [];
   }
 
-  let colors = [];
-
   switch (mode) {
     case "complementary":
-      colors = [baseHex, chroma(baseHex).set("hsl.h", "+180").hex()];
-      break;
+      return [baseHex, chroma(baseHex).set("hsl.h", "+180").hex()];
 
     case "analogous":
-      colors = chroma
+      return chroma
         .scale([
           chroma(baseHex).set("hsl.h", "-30"),
           baseHex,
@@ -221,53 +211,56 @@ function generateHarmony(baseHex, mode = "complementary") {
         ])
         .mode("lch")
         .colors(5);
-      break;
 
     case "triadic":
-      colors = [
+      return [
         baseHex,
         chroma(baseHex).set("hsl.h", "+120").hex(),
         chroma(baseHex).set("hsl.h", "+240").hex(),
       ];
-      break;
 
     case "split-complementary":
-      colors = [
+      return [
         baseHex,
         chroma(baseHex).set("hsl.h", "+150").hex(),
         chroma(baseHex).set("hsl.h", "+210").hex(),
       ];
-      break;
 
     case "tetradic":
-      colors = [
+      return [
         baseHex,
         chroma(baseHex).set("hsl.h", "+90").hex(),
         chroma(baseHex).set("hsl.h", "+180").hex(),
         chroma(baseHex).set("hsl.h", "+270").hex(),
       ];
-      break;
 
-    case "monochrome": // ✅ match your HTML
-    case "monochromatic": // safe alias
-      colors = chroma
+    case "monochrome":
+    case "monochromatic": // alias
+      return chroma
         .scale([chroma(baseHex).brighten(2), baseHex, chroma(baseHex).darken(2)])
         .mode("lab")
         .colors(5);
-      break;
 
     default:
-      colors = [baseHex];
-      break;
+      return [baseHex];
   }
-
-  return colors;
 }
 
-// Render harmony colors to UI
-function renderHarmony(colors = []) {
-  if (!harmonyGrid) return;
-  harmonyGrid.innerHTML = ""; // clear old swatches
+// Generate shades (light → dark)
+function generateShades(baseHex, steps = 7) {
+  if (!chroma.valid(baseHex)) return [];
+  return chroma
+    .scale([chroma(baseHex).brighten(2), baseHex, chroma(baseHex).darken(2)])
+    .mode("lab")
+    .colors(steps);
+}
+
+// Render swatches into grid
+function renderColors(colors = [], gridSelector) {
+  const grid = document.querySelector(gridSelector);
+  if (!grid) return;
+
+  grid.innerHTML = ""; // clear old swatches
 
   colors.forEach((hex) => {
     const swatch = document.createElement("div");
@@ -276,79 +269,154 @@ function renderHarmony(colors = []) {
     swatch.title = hex;
     swatch.style.position = "relative";
 
-    // hex label
     const label = document.createElement("span");
     label.textContent = hex;
-    label.style.position = "absolute";
-    label.style.bottom = "-18px";
-    label.style.left = "50%";
-    label.style.transform = "translateX(-50%)";
-    label.style.fontSize = "12px";
-    label.style.color = "#333";
-    label.style.background = "#fff";
-    label.style.padding = "2px 4px";
-    label.style.borderRadius = "4px";
-    label.style.boxShadow = "0 1px 3px rgba(0,0,0,0.2)";
-    label.style.whiteSpace = "nowrap";
-
-    // click-to-copy single swatch
-    swatch.addEventListener("click", () => {
-      navigator.clipboard.writeText(hex).then(() => {
-        showToast(`${hex} copied!`);
-      });
+    Object.assign(label.style, {
+      position: "absolute",
+      bottom: "-18px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      fontSize: "12px",
+      color: "#333",
+      background: "#fff",
+      padding: "2px 4px",
+      borderRadius: "4px",
+      boxShadow: "0 1px 3px rgba(0,0,0,0.2)",
+      whiteSpace: "nowrap",
     });
 
     swatch.appendChild(label);
-    harmonyGrid.appendChild(swatch);
+
+    // click-to-copy
+    swatch.addEventListener("click", () => {
+      navigator.clipboard.writeText(hex).then(() => showToast(`${hex} copied!`));
+    });
+
+    grid.appendChild(swatch);
   });
 }
 
-// Toast for copy feedback
+// Toast helper for feedback
 function showToast(msg) {
   let toast = document.querySelector(".cw-copy-toast");
   if (!toast) {
     toast = document.createElement("div");
     toast.className = "cw-copy-toast";
-    toast.style.position = "fixed";
-    toast.style.bottom = "20px";
-    toast.style.left = "50%";
-    toast.style.transform = "translateX(-50%)";
-    toast.style.background = "#333";
-    toast.style.color = "#fff";
-    toast.style.padding = "8px 12px";
-    toast.style.borderRadius = "6px";
-    toast.style.opacity = "0";
-    toast.style.transition = "opacity 0.3s";
+    Object.assign(toast.style, {
+      position: "fixed",
+      bottom: "20px",
+      left: "50%",
+      transform: "translateX(-50%)",
+      background: "#333",
+      color: "#fff",
+      padding: "8px 12px",
+      borderRadius: "6px",
+      opacity: "0",
+      transition: "opacity 0.3s",
+      zIndex: 9999,
+    });
     document.body.appendChild(toast);
   }
+
   toast.textContent = msg;
   toast.style.opacity = "1";
   setTimeout(() => (toast.style.opacity = "0"), 1800);
 }
 
-// Event bindings
+// Initialize harmony generator
 document.addEventListener("DOMContentLoaded", () => {
-  if (harmonyGenerate) {
-    harmonyGenerate.addEventListener("click", () => {
-      const baseHex = harmonyBase?.value || "#03a9f4";
-      let mode = harmonyMode?.value || "complementary";
+  const harmonyBase = document.querySelector("#h_base");
+  const harmonyMode = document.querySelector("#h_mode");
+  const harmonyGenerate = document.querySelector("#h_generate");
+  const harmonyCopy = document.querySelector("#h_copy");
+  const harmonyAdd = document.querySelector("#h_add");
+  const shadesAdd = document.querySelector("#sh_add");
 
-      // normalize mode names
-      if (mode === "monochromatic") mode = "monochrome";
+  let lastHarmony = [];
+  let lastShades = [];
 
-      const result = generateHarmony(baseHex, mode);
-      renderHarmony(result);
-    });
+  // Generate harmony
+  function doGenerateHarmony() {
+    const baseHex = harmonyBase?.value || "#03a9f4";
+    let mode = harmonyMode?.value || "complementary";
+    if (mode === "monochromatic") mode = "monochrome"; // normalize
+    lastHarmony = generateHarmony(baseHex, mode);
+    renderColors(lastHarmony, "#harmony_grid");
+
+    // auto-generate shades when harmony is generated
+    lastShades = generateShades(baseHex, 7);
+    renderColors(lastShades, "#shades_grid");
   }
 
-  if (harmonyCopy) {
-    harmonyCopy.addEventListener("click", () => {
-      const swatches = [...document.querySelectorAll("#harmony_grid .cg-swatch")];
-      const hexes = swatches.map((s) => s.title).join(", ");
-      navigator.clipboard.writeText(hexes).then(() => showToast("All colors copied!"));
-    });
-  }
+  // Generate button
+  harmonyGenerate?.addEventListener("click", doGenerateHarmony);
+
+  // Copy all button (only copies harmony colors, not shades)
+  harmonyCopy?.addEventListener("click", () => {
+    const hexes = [...document.querySelectorAll("#harmony_grid .cg-swatch")]
+      .map((s) => s.title)
+      .join(", ");
+    if (hexes) {
+      navigator.clipboard.writeText(hexes).then(() =>
+        showToast("Harmony colors copied!")
+      );
+    }
+  });
+
+  // Add Harmony to Palette
+  harmonyAdd?.addEventListener("click", () => {
+    if (typeof addColor === "function" && lastHarmony.length) {
+      lastHarmony.forEach((c) => addColor(c));
+      showToast("Harmony added to palette!");
+    }
+  });
+
+  // Add Shades to Palette
+  shadesAdd?.addEventListener("click", () => {
+    if (typeof addColor === "function" && lastShades.length) {
+      lastShades.forEach((c) => addColor(c));
+      showToast("Shades added to palette!");
+    }
+  });
+
+  // Keyboard shortcuts
+  document.addEventListener("keydown", (e) => {
+    if (["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName))
+      return;
+
+    const key = e.key.toLowerCase();
+
+    if (key === "h") {
+      e.preventDefault();
+      doGenerateHarmony();
+      showToast("Harmony + Shades generated");
+    }
+
+    if (key === "c") {
+      e.preventDefault();
+      harmonyCopy?.click();
+    }
+
+    if (["1", "2", "3", "4", "5", "6"].includes(key)) {
+      e.preventDefault();
+      const modes = {
+        "1": "complementary",
+        "2": "analogous",
+        "3": "triadic",
+        "4": "split-complementary",
+        "5": "tetradic",
+        "6": "monochrome",
+      };
+      if (harmonyMode) harmonyMode.value = modes[key];
+      doGenerateHarmony();
+      showToast(`${modes[key]} mode`);
+    }
+  });
+
+  // Auto-generate on load
+  doGenerateHarmony();
 });
+
 
 
 
@@ -898,170 +966,285 @@ palette?.addEventListener('mouseover', ev => {
   generateTintsShades(box.dataset.hex);
 });
 /* =========================================================================
-   Advanced Palette Feature — Harmonies & Schemes
+   Advanced Harmony + Shade Generator (Unified)
    ========================================================================= */
+
 (() => {
   const harmonyBase = $('#h_base');
   const harmonyMode = $('#h_mode');
   const harmonyGrid = $('#harmony_grid');
   const harmonyGenerate = $('#h_generate');
   const harmonyCopy = $('#h_copy');
+  const harmonyAdd = $('#h_add'); // Add Harmony to Palette
 
-  // Generate harmony colors based on mode
-  function generateHarmony(baseHex, mode) {
-    const [h, s, l] = hexToHsl(baseHex);
-    let angles = [];
+  const shadeBase = $('#sh_base');
+  const shadeGrid = $('#sh_grid');
+  const shadeGenerate = $('#sh_generate');
+  const shadeCopy = $('#sh_copy');
+  const shadeAdd = $('#sh_add'); // Add Shades to Palette
 
-    switch(mode) {
-      case 'complementary': angles = [0, 180]; break;
-      case 'analogous': angles = [0, 30, 330]; break;
-      case 'triadic': angles = [0, 120, 240]; break;
-      case 'tetradic': angles = [0, 90, 180, 270]; break;
-      case 'monochrome': return [hslToHex(h,s,Math.max(0,l-20)), baseHex, hslToHex(h,s,Math.min(100,l+20))];
-      default: angles = [0]; break;
+  /* ---------------- Color Helpers ---------------- */
+  function hexToHsl(H) {
+    let r = 0, g = 0, b = 0;
+    if (H.length === 4) {
+      r = "0x" + H[1] + H[1];
+      g = "0x" + H[2] + H[2];
+      b = "0x" + H[3] + H[3];
+    } else if (H.length === 7) {
+      r = "0x" + H[1] + H[2];
+      g = "0x" + H[3] + H[4];
+      b = "0x" + H[5] + H[6];
+    }
+    r /= 255; g /= 255; b /= 255;
+    const cmin = Math.min(r, g, b);
+    const cmax = Math.max(r, g, b);
+    const delta = cmax - cmin;
+    let h = 0, s = 0, l = (cmax + cmin) / 2;
+    if (delta !== 0) {
+      switch (cmax) {
+        case r: h = ((g - b) / delta) % 6; break;
+        case g: h = (b - r) / delta + 2; break;
+        case b: h = (r - g) / delta + 4; break;
+      }
+      h = Math.round(h * 60);
+      if (h < 0) h += 360;
+    }
+    s = delta === 0 ? 0 : delta / (1 - Math.abs(2 * l - 1));
+    return [h, s, l];
+  }
+
+  function hslToHex(h, s, l) {
+    l = Math.min(1, Math.max(0, l));
+    s = Math.min(1, Math.max(0, s));
+    const a = s * Math.min(l, 1 - l);
+    const f = n => {
+      const k = (n + h / 30) % 12;
+      const c = l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1));
+      return Math.round(255 * c).toString(16).padStart(2, '0');
+    };
+    return `#${f(0)}${f(8)}${f(4)}`;
+  }
+
+  /* ---------------- Harmony Generator ---------------- */
+  function generateHarmony(baseHex, mode = "complementary") {
+    if (!baseHex) return [];
+
+    // Use chroma.js if available
+    if (typeof chroma !== "undefined" && chroma.valid(baseHex)) {
+      switch (mode) {
+        case "complementary":
+          return [baseHex, chroma(baseHex).set("hsl.h", "+180").hex()];
+        case "analogous":
+          return chroma.scale([
+            chroma(baseHex).set("hsl.h", "-30"),
+            baseHex,
+            chroma(baseHex).set("hsl.h", "+30"),
+          ]).mode("lch").colors(5);
+        case "triadic":
+          return [
+            baseHex,
+            chroma(baseHex).set("hsl.h", "+120").hex(),
+            chroma(baseHex).set("hsl.h", "+240").hex(),
+          ];
+        case "split-complementary":
+          return [
+            baseHex,
+            chroma(baseHex).set("hsl.h", "+150").hex(),
+            chroma(baseHex).set("hsl.h", "+210").hex(),
+          ];
+        case "tetradic":
+          return [
+            baseHex,
+            chroma(baseHex).set("hsl.h", "+90").hex(),
+            chroma(baseHex).set("hsl.h", "+180").hex(),
+            chroma(baseHex).set("hsl.h", "+270").hex(),
+          ];
+        case "monochrome":
+        case "monochromatic":
+          return chroma.scale([
+            chroma(baseHex).brighten(2),
+            baseHex,
+            chroma(baseHex).darken(2),
+          ]).mode("lab").colors(5);
+      }
     }
 
-    return angles.map(a => hslToHex((h + a) % 360, s, l));
-  }
-
-  function renderHarmony(colors) {
-    if (!harmonyGrid) return;
-    harmonyGrid.innerHTML = '';
-    colors.forEach(c => {
-      const box = document.createElement('div');
-      box.className = 'shade-box';
-      box.style.background = c;
-      box.textContent = c;
-      box.title = `Click to copy ${c}`;
-      box.addEventListener('click', () => {
-        navigator.clipboard.writeText(c).then(() => { 
-          toast('Copied ' + c); 
-          playPop(); 
-        });
-      });
-      harmonyGrid.appendChild(box);
-    });
-  }
-
-  harmonyGenerate?.addEventListener('click', () => {
-    const base = harmonyBase?.value || '#ff6600';
-    const mode = harmonyMode?.value || 'complementary';
-    const colors = generateHarmony(base, mode);
-    renderHarmony(colors);
-  });
-
-  harmonyCopy?.addEventListener('click', () => {
-    if (!harmonyGrid) return toast('No harmony colors to copy');
-    const colors = $$('.shade-box', harmonyGrid).map(d => d.textContent).filter(Boolean).join(', ');
-    if (!colors) return toast('No harmony colors to copy');
-    navigator.clipboard.writeText(colors).then(() => { 
-      toast('Copied Harmony Colors'); 
-      playPop(); 
-    });
-  });
-})();
-/* =========================================================================
-   Advanced Palette Feature — Harmonies & Schemes with Live Preview
-   ========================================================================= */
-(() => {
-  const harmonyBase = $('#h_base');
-  const harmonyMode = $('#h_mode');
-  const harmonyGrid = $('#harmony_grid');
-  const harmonyGenerate = $('#h_generate');
-  const harmonyCopy = $('#h_copy');
-  const livePreview = $('#live-preview'); // reuse your existing live preview
-
-  // Generate harmony colors based on mode
-  function generateHarmony(baseHex, mode) {
+    // Fallback manual HSL
     const [h, s, l] = hexToHsl(baseHex);
-    let angles = [];
-
-    switch(mode) {
-      case 'complementary': angles = [0, 180]; break;
-      case 'analogous': angles = [0, 30, 330]; break;
-      case 'triadic': angles = [0, 120, 240]; break;
-      case 'tetradic': angles = [0, 90, 180, 270]; break;
-      case 'monochrome': return [hslToHex(h,s,Math.max(0,l-20)), baseHex, hslToHex(h,s,Math.min(100,l+20))];
-      default: angles = [0]; break;
+    switch (mode) {
+      case "complementary":
+        return [baseHex, hslToHex((h + 180) % 360, s, l)];
+      case "analogous":
+        return [
+          hslToHex((h - 30 + 360) % 360, s, l),
+          baseHex,
+          hslToHex((h + 30) % 360, s, l),
+        ];
+      case "triadic":
+        return [
+          baseHex,
+          hslToHex((h + 120) % 360, s, l),
+          hslToHex((h + 240) % 360, s, l),
+        ];
+      case "split-complementary":
+        return [
+          baseHex,
+          hslToHex((h + 150) % 360, s, l),
+          hslToHex((h + 210) % 360, s, l),
+        ];
+      case "tetradic":
+        return [
+          baseHex,
+          hslToHex((h + 90) % 360, s, l),
+          hslToHex((h + 180) % 360, s, l),
+          hslToHex((h + 270) % 360, s, l),
+        ];
+      case "monochrome":
+        return [
+          hslToHex(h, s, Math.max(0, l - 0.25)),
+          hslToHex(h, s, Math.max(0, l - 0.1)),
+          baseHex,
+          hslToHex(h, s, Math.min(1, l + 0.1)),
+          hslToHex(h, s, Math.min(1, l + 0.25)),
+        ];
     }
-
-    return angles.map(a => hslToHex((h + a) % 360, s, l));
+    return [baseHex];
   }
 
-  function renderHarmony(colors) {
+  function renderHarmony(colors = []) {
     if (!harmonyGrid) return;
-    harmonyGrid.innerHTML = '';
-    colors.forEach(c => {
-      const box = document.createElement('div');
-      box.className = 'shade-box';
-      box.style.background = c;
-      box.textContent = c;
-      box.title = `Click to copy ${c}`;
-      
-      // Click to copy
-      box.addEventListener('click', () => {
-        navigator.clipboard.writeText(c).then(() => { 
-          toast('Copied ' + c); 
-          playPop(); 
+    harmonyGrid.innerHTML = "";
+    colors.forEach(hex => {
+      const swatch = document.createElement("div");
+      swatch.className = "cg-swatch";
+      swatch.style.background = hex;
+      swatch.title = hex;
+
+      const label = document.createElement("span");
+      label.textContent = hex;
+      label.className = "swatch-label";
+      swatch.appendChild(label);
+
+      swatch.addEventListener("click", () => {
+        navigator.clipboard.writeText(hex).then(() => {
+          toast(`${hex} copied`);
+          playPop();
         });
       });
-
-      // Hover live preview
-      box.addEventListener('mouseover', () => {
-        if (livePreview) {
-          livePreview.style.backgroundColor = c;
-          livePreview.style.color = getReadableText(c);
-          livePreview.textContent = `Preview: ${c}`;
-        }
-      });
-
-      box.addEventListener('mouseleave', () => {
-        if (livePreview) {
-          livePreview.style.backgroundColor = '';
-          livePreview.style.color = '';
-          livePreview.textContent = 'Live Preview';
-        }
-      });
-
-      harmonyGrid.appendChild(box);
+      harmonyGrid.appendChild(swatch);
     });
   }
 
-  harmonyGenerate?.addEventListener('click', () => {
-    const base = harmonyBase?.value || '#ff6600';
-    const mode = harmonyMode?.value || 'complementary';
-    const colors = generateHarmony(base, mode);
-    renderHarmony(colors);
+  function doGenerateHarmony() {
+    const baseHex = harmonyBase?.value || "#03a9f4";
+    let mode = harmonyMode?.value || "complementary";
+    if (mode === "monochromatic") mode = "monochrome";
+    const result = generateHarmony(baseHex, mode);
+    renderHarmony(result);
+    return result;
+  }
+
+  /* ---------------- Shade Generator ---------------- */
+  function generateShades(baseHex, steps = 7) {
+    if (!baseHex) return [];
+    if (typeof chroma !== "undefined" && chroma.valid(baseHex)) {
+      return chroma.scale([chroma(baseHex).brighten(2), baseHex, chroma(baseHex).darken(2)])
+        .mode("lab")
+        .colors(steps);
+    }
+    const [h, s, l] = hexToHsl(baseHex);
+    let shades = [];
+    for (let i = -Math.floor(steps / 2); i <= Math.floor(steps / 2); i++) {
+      const adj = Math.min(1, Math.max(0, l + i * 0.1));
+      shades.push(hslToHex(h, s, adj));
+    }
+    return shades;
+  }
+
+  function renderShades(colors = []) {
+    if (!shadeGrid) return;
+    shadeGrid.innerHTML = "";
+    colors.forEach(hex => {
+      const swatch = document.createElement("div");
+      swatch.className = "shade-box";
+      swatch.style.background = hex;
+      swatch.textContent = hex;
+
+      swatch.addEventListener("click", () => {
+        navigator.clipboard.writeText(hex).then(() => {
+          toast(`${hex} copied`);
+          playPop();
+        });
+      });
+      shadeGrid.appendChild(swatch);
+    });
+  }
+
+  function doGenerateShades() {
+    const baseHex = shadeBase?.value || "#03a9f4";
+    const result = generateShades(baseHex, 7);
+    renderShades(result);
+    return result;
+  }
+
+  /* ---------------- Event Bindings ---------------- */
+  harmonyGenerate?.addEventListener("click", doGenerateHarmony);
+  harmonyCopy?.addEventListener("click", () => {
+    const hexes = [...harmonyGrid.querySelectorAll(".cg-swatch")].map(s => s.title).join(", ");
+    navigator.clipboard.writeText(hexes).then(() => toast("All harmony colors copied!"));
+  });
+  harmonyAdd?.addEventListener("click", () => {
+    const colors = doGenerateHarmony();
+    colors.forEach(c => addColor(c));
+    toast("Harmony added to palette");
   });
 
-  harmonyCopy?.addEventListener('click', () => {
-    if (!harmonyGrid) return toast('No harmony colors to copy');
-    const colors = $$('.shade-box', harmonyGrid).map(d => d.textContent).filter(Boolean).join(', ');
-    if (!colors) return toast('No harmony colors to copy');
-    navigator.clipboard.writeText(colors).then(() => { 
-      toast('Copied Harmony Colors'); 
-      playPop(); 
-    });
+  shadeGenerate?.addEventListener("click", doGenerateShades);
+  shadeCopy?.addEventListener("click", () => {
+    const hexes = [...shadeGrid.querySelectorAll(".shade-box")].map(s => s.textContent).join(", ");
+    navigator.clipboard.writeText(hexes).then(() => toast("All shades copied!"));
   });
+  shadeAdd?.addEventListener("click", () => {
+    const colors = doGenerateShades();
+    colors.forEach(c => addColor(c));
+    toast("Shades added to palette");
+  });
+
+  /* ---------------- Keyboard Shortcuts ---------------- */
+  document.addEventListener("keydown", e => {
+    if (["INPUT","TEXTAREA","SELECT"].includes(document.activeElement.tagName)) return;
+    const key = e.key.toLowerCase();
+
+    if (key === "h") { doGenerateHarmony(); toast("Harmony generated"); }
+    if (key === "c") { harmonyCopy?.click(); }
+    if (key === "a") { harmonyAdd?.click(); }
+    if (key === "s") { doGenerateShades(); toast("Shades generated"); }
+    if (key === "d") { shadeAdd?.click(); }
+    if (e.shiftKey && key === "a") {
+      const all = [...doGenerateHarmony(), ...doGenerateShades()];
+      all.forEach(c => addColor(c));
+      toast("Harmony + Shades added to palette");
+    }
+    if (["1","2","3","4","5","6"].includes(key)) {
+      const modes = {
+        "1": "complementary",
+        "2": "analogous",
+        "3": "triadic",
+        "4": "split-complementary",
+        "5": "tetradic",
+        "6": "monochrome",
+      };
+      harmonyMode.value = modes[key];
+      doGenerateHarmony();
+      toast(`${modes[key]} mode`);
+    }
+  });
+
+  /* ---------------- Auto-generate on Load ---------------- */
+  doGenerateHarmony();
+  doGenerateShades();
 })();
-/* ---------- Harmony Keyboard Shortcuts ---------- */
-document.addEventListener('keydown', (e) => {
-  if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName)) return;
 
-  const generateHarmonyBtn = $('#h_generate');
-  const copyHarmonyBtn = $('#h_copy');
-
-  if (e.key.toLowerCase() === 'h') { // Press H to generate Harmony
-    e.preventDefault();
-    generateHarmonyBtn?.click();
-    toast('Harmony generated');
-  }
-
-  if (e.key.toLowerCase() === 'c') { // Press C to copy Harmony colors
-    e.preventDefault();
-    copyHarmonyBtn?.click();
-  }
-});
 /* ---------- Tints & Shades Generator ---------- */
 $('#sh_generate')?.addEventListener('click', () => {
   const base = $('#sh_base')?.value || '#ff6600';
@@ -1583,50 +1766,6 @@ document.addEventListener('keydown', e => {
       } else showToast('Unable to determine CSS gradient');
     });
 
-    // ---------- Harmony (advanced) ----------
-    function generateHarmony(base, mode = 'complementary') {
-      const baseHex = normalizeColor(base) || '#FF6600';
-      try {
-        if (typeof chroma !== 'undefined') {
-          switch (mode) {
-            case 'complementary':
-              return [baseHex, chroma(baseHex).set('hsl.h', '+180').hex().toUpperCase()];
-            case 'analogous':
-              return chroma.scale([chroma(baseHex).set('hsl.h', '-30'), baseHex, chroma(baseHex).set('hsl.h', '+30')]).mode('lch').colors(5).map(h => h.toUpperCase());
-            case 'triadic':
-              return [baseHex, chroma(baseHex).set('hsl.h', '+120').hex().toUpperCase(), chroma(baseHex).set('hsl.h', '+240').hex().toUpperCase()];
-            case 'split-complementary':
-              return [baseHex, chroma(baseHex).set('hsl.h', '+150').hex().toUpperCase(), chroma(baseHex).set('hsl.h', '+210').hex().toUpperCase()];
-            case 'tetradic':
-              return [baseHex, chroma(baseHex).set('hsl.h', '+90').hex().toUpperCase(), chroma(baseHex).set('hsl.h', '+180').hex().toUpperCase(), chroma(baseHex).set('hsl.h', '+270').hex().toUpperCase()];
-            case 'monochrome':
-            case 'monochromatic':
-              return chroma.scale([chroma(baseHex).brighten(2), baseHex, chroma(baseHex).darken(2)]).mode('lab').colors(5).map(h => h.toUpperCase());
-            default:
-              return [baseHex];
-          }
-        } else {
-          // chroma not present — fallback simple HSL manip
-          const [h, s, l] = hexToHsl(baseHex);
-          const hplus = (n) => ((h + n + 360) % 360);
-          switch (mode) {
-            case 'complementary': return [baseHex, hslToHex(hplus(180), s, l)];
-            case 'analogous': return [hslToHex(hplus(-30), s, l), baseHex, hslToHex(hplus(30), s, l)];
-            case 'triadic': return [baseHex, hslToHex(hplus(120), s, l), hslToHex(hplus(240), s, l)];
-            case 'tetradic': return [baseHex, hslToHex(hplus(90), s, l), hslToHex(hplus(180), s, l), hslToHex(hplus(270), s, l)];
-            case 'monochrome':
-            case 'monochromatic':
-              return [hslToHex(h, s, Math.min(100, l + 20)), baseHex, hslToHex(h, s, Math.max(0, l - 20))];
-            default:
-              return [baseHex];
-          }
-        }
-      } catch (e) {
-        console.warn('generateHarmony failed', e);
-        return [baseHex];
-      }
-    }
-
     // small HSL helpers for fallback
     function hexToHsl(hex) {
       const [r, g, b] = hexToRgb(hex).map(v => v / 255);
@@ -1659,67 +1798,6 @@ document.addEventListener('keydown', e => {
       return '#' + [r,g,b].map(v => Math.round((v + m) * 255).toString(16).padStart(2, '0')).join('').toUpperCase();
     }
 
-    function renderHarmony(colors = []) {
-      const grid = $('#harmony_grid') || $('#harmony-swatches');
-      if (!grid) { console.warn('harmony grid not found'); return; }
-      grid.innerHTML = '';
-      colors.forEach(hex => {
-        const d = document.createElement('div');
-        d.className = 'shade-box';
-        d.style.background = hex;
-        d.textContent = hex;
-        d.title = hex;
-        d.addEventListener('click', () => {
-          const normalized = normalizeColor(hex);
-          if (normalized) {
-            if (paletteEl) {
-              // add to palette on ctrl/shift click, otherwise copy
-              if (event?.ctrlKey || event?.metaKey) {
-                paletteEl.appendChild(createColorBox(normalized));
-                persistPalette();
-                showToast('Added ' + normalized);
-                return;
-              }
-            }
-            navigator.clipboard?.writeText(normalized).then(() => showToast(normalized + ' copied'));
-          }
-        });
-        grid.appendChild(d);
-      });
-    }
-
-    // Hook generate & copy buttons
-    $('#h_generate')?.addEventListener('click', () => {
-      const base = $('#h_base')?.value || '#FF6600';
-      const mode = $('#h_mode')?.value || 'complementary';
-      const colors = generateHarmony(base, mode);
-      renderHarmony(colors);
-      showToast('Harmony generated');
-    });
-
-    $('#h_copy')?.addEventListener('click', () => {
-      const grid = $('#harmony_grid') || $('#harmony-swatches');
-      if (!grid) return showToast('No harmony grid to copy from');
-      const colors = Array.from(grid.querySelectorAll('.shade-box')).map(d => d.textContent.trim());
-      if (!colors.length) return showToast('No colors to copy');
-      navigator.clipboard?.writeText(colors.join(', ')).then(() => showToast('Harmony copied'));
-    });
-
-    // Keyboard shortcuts for harmony shortcuts
-    document.addEventListener('keydown', (e) => {
-      if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
-      if (e.key.toLowerCase() === 'h') $('#h_generate')?.click();
-      if (e.key.toLowerCase() === 'c') $('#h_copy')?.click();
-    });
-
-    // If harmony grid empty at load, generate once (safe)
-    try {
-      if ($('#harmony_grid') && $('#harmony_grid').children.length === 0) {
-        const base = $('#h_base')?.value || '#ff6600';
-        const mode = $('#h_mode')?.value || 'complementary';
-        renderHarmony(generateHarmony(base, mode));
-      }
-    } catch (e) { /* ignore */ }
 
     // ---------- Help overlay / walkthrough ----------
     const openHelpBtn = $('#open-help'), helpOverlay = $('#help-overlay'), closeHelpBtn = $('#close-help');

@@ -2,7 +2,13 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
 body {
-  font-family: "Poppins",sans-serif; background:#f4f4f4; color:#222; }
+  font-family: "Poppins", sans-serif;
+  margin: 0;
+  min-height: 100vh;
+ 
+  /* makes sure it fills full screen */
+  
+}
 
 :root{
     --white-color:#fff;
@@ -49,11 +55,20 @@ ul.nav-links a:hover::after{ width:100%; }
 
 /* Section basic layout */
 section { min-height:100vh; padding:120px 20px 60px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:18px; }
+.landing {
+  width: 100%;
+  min-height: 100vh;
+  background: linear-gradient(120deg, #ff6b6b 0%, #6c63ff 100%);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  
+   background-attachment: fixed;
+}
 
-/* Landing */
-.landing { background: linear-gradient(120deg, #ff6b6b 0%, #6c63ff 100%); color: #fff; text-align:center; padding-top:160px; }
-.landing h1 { font-size: clamp(1.6rem, 4vw, 3rem); margin-bottom:6px; }
-.landing p { font-size: clamp(1rem, 2vw, 1.1rem); max-width:900px; margin-bottom:16px; }
+
+.landing h1 { font-size: clamp(1.6rem, 4vw, 3rem); margin-bottom:6px; color: #fff; }
+.landing p { font-size: clamp(1rem, 2vw, 1.1rem); max-width:900px; margin-bottom:16px; color:#fff;  text-align: center;}
 .btn { display:inline-block; background:#111; color:#fff; padding:16px 36px; border-radius:40px; text-transform:uppercase; text-decoration:none; font-weight:700; cursor:pointer; position:relative; overflow:hidden; }
 .btn::before { content:''; position:absolute; inset:-6px; border-radius:40px; filter:blur(14px); opacity:0; transition:opacity .3s; background:inherit; }
 .btn:hover::before { opacity:1; }
@@ -73,7 +88,9 @@ section { min-height:100vh; padding:120px 20px 60px; display:flex; flex-directio
 @keyframes scroll-left { from { transform: translateX(0) } to { transform: translateX(-50%) } }
 .colors { flex:0 0 auto; width:110px; height:170px; border-radius:10px; overflow:hidden; }
 .color-image { width:100%; height:100%; }
-
+.overall{
+  background: cornsilk;
+}
 /* Generator */
 .generator { background:#efefef; width:100%; padding:80px 20px; display:flex; flex-direction:column; align-items:center; gap:16px; }
 .palette { display:grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap:18px; width:100%; max-width:980px; }
@@ -1424,4 +1441,92 @@ label[for="eraser_size"] {
   position: absolute;
   bottom: 6px;
   left: 6px;
+}
+/* ===============================
+   GLOBAL COLORS (consistent theme)
+   =============================== */
+:root {
+  --background-main: #f4f4f4; /* unified base background */
+  --background-card: #fff;
+  --background-dark: #111;
+  --accent-primary: #6c63ff;
+  --accent-secondary: #ff6b6b;
+  --text-dark: #222;
+  --text-light: #fff;
+}
+
+
+/* ===============================
+   RESPONSIVE CONTAINERS
+   =============================== */
+
+/* Unified sections */
+section,
+.generator,
+.tools,
+.contact,
+.export-section,
+#image_extractor {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 20px;
+  border-radius: 12px;
+  background: var(--background-card);
+  box-sizing: border-box;
+}
+
+/* ===============================
+   RESPONSIVENESS
+   =============================== */
+
+/* Tablets (≤ 992px) */
+@media (max-width: 992px) {
+  .palette {
+    grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+  }
+  .tool-box {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .container-tools {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Large phones (≤ 768px) */
+@media (max-width: 768px) {
+  header {
+    flex-wrap: wrap;
+    padding: 12px 16px;
+  }
+  section {
+    padding: 80px 16px 40px;
+  }
+  .palette {
+    grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+  }
+  .tool-box {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .footer-section .section-content {
+    flex-direction: column;
+    text-align: center;
+    gap: 14px;
+  }
+}
+
+/* Small phones (≤ 600px) */
+@media (max-width: 600px) {
+  nav { gap: 8px; }
+  .tool-box {
+    grid-template-columns: 1fr;
+  }
+  .cg-swatch {
+    width: 60px;
+    height: 60px;
+  }
+  .palette {
+    grid-template-columns: repeat(auto-fit, minmax(70px, 1fr));
+  }
 }

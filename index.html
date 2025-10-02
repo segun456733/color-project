@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="utf-8" />
-      <meta http-equiv="X-UA-Compatible" content="IE=edge" >
+      
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Color World</title>
   <!-- Firebase -->
@@ -69,7 +69,7 @@
         <li><a href="#Feedback">Feedback</a></li>
 
         
-        
+      
         
       </ul>
       <button id="menuToggle"><i class="fa fa-bars"></i></button>
@@ -120,20 +120,22 @@
         </div>
       </div>
     </section>
+    <section class="overall">
+      <section class="main23">
     
     <!-- Generator (keeps original functions) -->
     <section id="generator" class="generator">
       <h2>Color Palette Generator</h2>
       <div class="palette" id="palette">
-        <div class="color-box"><span class="copy">#e2ab21</span></div>
-        <div class="color-box"><span class="copy">#84b96a</span></div>
-        <div class="color-box"><span class="copy">#fa5822</span></div>
-        <div class="color-box"><span class="copy">#6dee23</span></div>
-        <div class="color-box"><span class="copy">#6c63ff</span></div>
-        <div class="color-box"><span class="copy">#03a9f4</span></div>
+        <div class="color-box"><span class="copy"></span></div>
+        <div class="color-box"><span class="copy"></span></div>
+        <div class="color-box"><span class="copy"></span></div>
+        <div class="color-box"><span class="copy"></span></div>
+        <div class="color-box"><span class="copy"></span></div>
+        <div class="color-box"><span class="copy"></span></div>
       </div>
       <!-- ADD: Quick hex input + add swatch -->
-<div class="hex-controls" style="margin-top:12px; display:flex; gap:8px; align-items:center;">
+<div class="hex-controls" style="margin-top:12px; display:flex; gap:8px; align-items:center; flex-direction: column;">
   <input id="hex-input" type="text" placeholder="#RRGGBB or #RGB" aria-label="Hex input" style="padding:8px;border-radius:8px;border:1px solid #ddd;width:140px;">
   <button id="applyHex" class="btt">Apply to Selected</button>
   <button id="addSwatch" class="btt">+ Add Swatch</button>
@@ -304,10 +306,14 @@
                 </select>
               </label>
               <div id="harmony_grid" class="harmony-grid"></div>
-              <div class="cw-row">
-                <button id="h_generate" class="btn2">Generate Harmony</button>
-                <button id="h_copy" class="btn2">Copy Colors</button>
-              </div>
+<div id="shades_grid" class="harmony-grid"></div>
+<div class="cw-row">
+  <button id="h_generate" class="btn2">Generate Harmony</button>
+  <button id="h_copy" class="btn2">Copy Colors</button>
+  <button id="h_add" class="btn2">Add Harmony to Palette</button>
+  <button id="sh_add" class="btn2">Add Shades to Palette</button>
+</div>
+
             </div>
           </div>
           
@@ -467,17 +473,7 @@
 
 <!-- Toast Notification -->
 <div id="toast" class="toast" aria-live="polite"></div>
-<footer class="footer-section">
-  <div class="section-content">
-    <p class="copyright-text"> 2025 color palette</p>
-    <div class="social-link-list">
-      <a href="#" class="social-link"><i class="fa-brands fa-facebook"></i></a>
-      <a href="#" class="social-link"><i class="fa-brands fa-instagram"></i></a>
-      <a href="#" class="social-link"><i class="fa-brands fa-x-twitter"></i></a>
-    </div>
-    
-  </div>
-</footer>
+
 
 
 <!-- Floating Help Button -->
@@ -503,7 +499,8 @@
     </div>
   </div>
 </div>
-
+</section>
+</section>
 
 </main>
 
