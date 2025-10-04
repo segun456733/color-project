@@ -149,7 +149,7 @@
         
         <!-- Live Preview -->
         <div id="live-preview" class="live-preview">
-          <p>Live Preview</p>
+          <p>Live color preview</p>
         </div>
         
       </div>
@@ -276,7 +276,7 @@
     
     <!-- Extra Tools (TABS) -->
     <section id="extra-tools" class="extra-tools">
-      <h2>Extra Tools</h2>
+      <h2 class="my tools">Extra Tools</h2>
       
       <div class="tabs" id="extraTabs">
         <div class="tab-buttons" role="tablist">
@@ -308,11 +308,8 @@
               <div id="harmony_grid" class="harmony-grid"></div>
 <div id="shades_grid" class="harmony-grid"></div>
 <div class="cw-row">
-  <button id="h_generate" class="btn2">Generate Harmony</button>
-  <button id="h_copy" class="btn2">Copy Colors</button>
-  <button id="h_add" class="btn2">Add Harmony to Palette</button>
-  <button id="sh_add" class="btn2">Add Shades to Palette</button>
-</div>
+  <button id="h_generate" class="btn2" style="margin-bottom: 10px;">Generate Harmony</button>
+  <button id="h_copy" class="btn2" style="margin-bottom: 10px;">Copy Colors</button>
 
             </div>
           </div>
@@ -354,6 +351,7 @@
       <option value="5">5</option>
       <option value="10" selected>10</option>
       <option value="15">15</option>
+      <option value="15"></option>
     </select>
 
     <label>
@@ -361,11 +359,11 @@
     </label>
 
     <div class="export-buttons">
-      <button id="ex_copy">Copy All</button>
-      <button id="ex_download">Download PNG</button>
-      <button id="ex_export_json">Export JSON</button>
-      <button id="ex_export_css">Export CSS</button>
-      <button id="ex_export_tailwind">Export Tailwind</button>
+      <button  id="ex_copy"  >Copy All</button>
+      <button id="ex_download"  >Download PNG</button>
+      <button id="ex_export_json"  >Export JSON</button>
+      <button id="ex_export_css"   >Export CSS</button>
+      <button id="ex_export_tailwind" >Export Tailwind</button>
     </div>
 
     <p id="eyedrop_info">Hover over image to see pixel color</p>

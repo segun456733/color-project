@@ -676,7 +676,7 @@ document.addEventListener('DOMContentLoaded', () => {
       textAlign: 'center',
       transition: 'background-color 0.3s ease, color 0.3s ease'
     });
-    mockup.textContent = 'Live Mockup Preview';
+    mockup.textContent = ' selected live color preview ';
     palette.parentNode.insertBefore(mockup, palette.nextSibling);
   }
 
