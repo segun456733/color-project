@@ -1220,3 +1220,14 @@ label[for="eraser_size"] {
     color: #000000;
     background-color: #ffffff;
 }
+.site-header {
+  display: flex;
+  align-items: center;
+  background: #000;
+  padding: 10px 20px;
+}
+
+.logo svg {
+  height: 38px;
+  width: auto;
+}
