@@ -5,6 +5,12 @@
       
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Color World</title>
+  <!-- Material Icons -->
+   <!-- Material Icons (Rounded Style) -->
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+
   <!-- Firebase -->
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -29,7 +35,7 @@
 
 <!-- optional: chroma.js for advanced harmony (optional but handy) -->
 
-
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=help" />
 
   <!-- Fonts & Icons -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -57,9 +63,23 @@
   
   <!-- Header / Navbar -->
   <header class="site-header">
-    <div class="logo">🎨 color palette</div>
+   <div class="logo">
+ 
+  <img src="" alt="" class="logo23"  >
+</div>
+<!-- Theme Toggle Button -->
+<div class="theme-toggle">
+  <button id="themeToggle" class="theme-toggle" title="Toggle theme">
+  <span class="material-icons-round">light_mode</span>
+</button>
+
+</div>
+
+
     <nav>
       <ul id="navLinks" class="nav-links">
+ 
+
         <li><a href="#home">Home</a></li>
 
         <li><a href="#generator">Generator</a></li>
@@ -74,6 +94,7 @@
       </ul>
       <button id="menuToggle"><i class="fa fa-bars"></i></button>
     </nav>
+ 
   </header>
   
   <div id="navOverlay" class="nav-overlay"></div>
@@ -89,34 +110,34 @@
       <!-- Seamless Color Film (animated strip) -->
       <div class="color-slider">
         <div class="slider-track" id="sliderTrack">
-          <div class="colors"><div class="color-image" style="background:#f5a066"></div></div>
-          <div class="colors"><div class="color-image" style="background:#a5885f"></div></div>
-          <div class="colors"><div class="color-image" style="background:#fe95b2"></div></div>
-          <div class="colors"><div class="color-image" style="background:#a3be0d"></div></div>
-          <div class="colors"><div class="color-image" style="background:#4173dc"></div></div>
-          <div class="colors"><div class="color-image" style="background:#08d53e"></div></div>
-          <div class="colors"><div class="color-image" style="background:#5ce3ff"></div></div>
-          <div class="colors"><div class="color-image" style="background:#fe1725"></div></div>
-          <div class="colors"><div class="color-image" style="background:#3051b9"></div></div>
-          <div class="colors"><div class="color-image" style="background: linear-gradient(164deg, rgb(46, 247, 179), rgb(244, 65, 165));"></div></div>
-          <div class="colors"><div class="color-image" style="background:#d91e9c"></div></div>
-          <div class="colors"><div class="color-image" style="background: linear-gradient(164deg, rgb(46, 247, 179), rgb(248, 226, 40));"></div></div>
-          <div class="colors"><div class="color-image" style="background:#f1e851"></div></div>
-          <div class="colors"><div class="color-image" style="background:#49eeb5"></div></div>
-          <div class="colors"><div class="color-image" style="background:#20c551"></div></div>
-          <div class="colors"><div class="color-image" style="background:#c6a26b"></div></div>
-          <div class="colors"><div class="color-image" style="background:#fb6bcd"></div></div>
-          <div class="colors"><div class="color-image" style="background:#ff852e"></div></div>
-          <div class="colors"><div class="color-image" style="background: linear-gradient(164deg, rgb(242, 193, 20), rgb(244, 65, 165));"></div></div>
-          <div class="colors"><div class="color-image" style="background: linear-gradient(164deg, rgb(38, 108, 197), rgb(118, 168, 218));"></div></div>
-          <div class="colors"><div class="color-image" style="background: linear-gradient(164deg, rgb(209, 146, 227), rgb(118, 168, 218));"></div></div>
-          <div class="colors"><div class="color-image" style="background: linear-gradient(164deg, rgb(209, 146, 227), rgb(235, 42, 54));"></div></div>
-          <div class="colors"><div class="color-image" style="background: linear-gradient(164deg, rgb(242, 203, 15), rgb(235, 42, 54));"></div></div>
-          <div class="colors"><div class="color-image" style="background:#CEE8EA"></div></div>
-          <div class="colors"><div class="color-image" style="background: linear-gradient(164deg, rgb(46, 247, 179), rgb(248, 226, 40));"></div></div>
-          <div class="colors"><div class="color-image" style="background:#f1e851"></div></div>
-          <div class="colors"><div class="color-image" style="background:#49eeb5"></div></div>
-          <div class="colors"><div class="color-image" style="background:#20c551"></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" >></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ><div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image" ></div></div>
+          <div class="colors"><div class="color-image"></div></div>
+          <div class="colors"><div class="color-image"></div></div>
+          <div class="colors"><div class="color-image"></div></div>
         </div>
       </div>
     </section>
@@ -153,6 +174,7 @@
         </div>
         
       </div>
+      
     </section>
     
     <!-- Tools (existing ones) -->
@@ -377,14 +399,14 @@
 
 
             <!-- BACKGROUND REMOVER -->
-            <div class="tool" id="background_remover">
+            <div class="tool" id="background_remover" style=" background: var(--card-bg); color: var(--card-text);">
               <h2>🖼️ Background Remover</h2>
               
               <!-- Remove button -->
               <button id="remove_bg_btn" class="primary-btn">Remove Background</button>
               
               <!-- Canvas preview -->
-              <div class="canvas-wrapper">
+              <div class="canvas-wrapper" style=" background: var(--card-bg); color: var(--card-text);">
                 <canvas id="bg_canvas"></canvas>
                 <!-- Floating download icon -->
                 <button id="download_bg_removed" class="download-icon" title="Download">
@@ -393,7 +415,7 @@
               </div>
               
               <!-- Tools -->
-              <div class="tools-panel">
+              <div class="tools-panel" style=" background: var(--card-bg); color: var(--card-text);">
                 <button id="eraser_btn">Start Eraser</button>
                 
                 <button id="undo_btn">Undo</button>
@@ -407,17 +429,21 @@
             </div>
             <!-- Notification Container -->
             <div id="notification-container" class="notification-container"></div>
-            
+            <div style="background: repeating-conic-gradient(#ccc 0% 25%, #fff 0% 50%) 0 / 20px 20px;">
+  <canvas id="bg_canvas"></canvas>
+</div>
+
           </section>
           <!-- ========== EXPORT SECTION (REPLACE OLD) ========== -->
-          <section id="export-section" class="export-section">
+          <section id="export-section" class="export-section" style=" background: var(--card-bg); color: var(--card-text);">
+            <div class="export-section-mbg" style=" background: var(--card-bg); color: var(--card-text);">
             <h2>Export Options</h2>
             
-            <div class="export-block">
+            <div class="export-block" style=" background: var(--card-bg); color: var(--card-text);">
               <h3>Export Palette</h3>
               
-              <div class="export-row">
-                <div class="export-note">Exports the currently visible palette (from <code>#palette</code>).</div>
+              <div class="export-row" style=" background: var(--card-bg); color: var(--card-text);">
+               
                 <div class="export-buttons">
                   <button id="export-palette-png" class="export-btn">⬇️ Export Palette PNG</button>
                   <button id="export-palette-json" class="export-btn">⬇️ Export Palette JSON</button>
@@ -426,25 +452,20 @@
               </div>
             </div>
             
-            <div class="export-block">
-              <h3>Export Gradient (from Gradient Generator)</h3>
-              <div class="export-row">
-                <div class="export-note">
-                  This will capture the **exact** gradient shown in your Gradient Generator (<code>#gradient-preview</code>) and:
-                  <ul>
-                    <li>Download a PNG screenshot of the gradient</li>
-                    <li>Download a <code>.css</code> file that contains the gradient CSS</li>
-                  </ul>
-                </div>
+            <div class="export-block" style=" background: var(--card-bg); color: var(--card-text);">
+             
+              <div class="export-row" style=" background: var(--card-bg); color: var(--card-text);">
+               
                 
-                <div class="export-buttons">
+                <div class="export-buttons" style=" background: var(--card-bg); color: var(--card-text);">
                   <button id="export-gradient" class="export-btn">⬇️ Export Gradient PNG + CSS</button>
                 </div>
               </div>
             </div>
             
             <div class="export-footer">
-              <small>Tip: change your gradient in the Gradient Generator, then press <b>Export Gradient</b> to download the exact result.</small>
+              </div>
+              
             </div>
           </section>
           
@@ -473,13 +494,21 @@
 <div id="toast" class="toast" aria-live="polite"></div>
 
 
-
 <!-- Floating Help Button -->
-<button id="open-help" class="help-floating-btn">❓ Help</button>
+<button id="open-help" class="help-floating-btn">
+  <svg width="84" height="80" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg">
+    <!-- Circular background -->
+    <circle cx="22" cy="22" r="22" style="fill: var(--card-bg);"></circle>
+    <!-- Help icon -->
+    <text x="25" y="36" text-anchor="middle" margin-right="8rem" font-size="30" font-weight="900" style="fill: var(--card-text);">?</text>
+  </svg>
+</button>
+
 
 <!-- Help Overlay -->
 <div id="help-overlay" class="help-overlay">
-  <div class="help-box">
+  <div class="help-box" style="color: var(--card-text);
+background: var(--card-bg)">
     <!-- Close Button -->
     <span id="close-help" class="help-close">&times;</span>
     
@@ -503,17 +532,14 @@
 </main>
 
 
-
-<!-- script -->
- 
-
-
-
   <script src="complete.js"></script>
-<script src="backgroundremover.js"></script>
-<script src="script.js"></script>
-<script src="contrast-advanced.js"></script>
-<script src="export-module.js"></script>
+  <script src="backgroundremover.js"></script>
+  
+  <script src="contrast-advanced.js"></script>
+  <script src="export-module.js"></script>
+    <script src="js/chatbot.js"></script>
+  <script src="script.js" defer></script>
+  <script src="java/register_form_using_html_css_js/color23/contact.js"></script>
 
 </body>
 </html>

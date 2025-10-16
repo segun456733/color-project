@@ -70,7 +70,8 @@
     anchor.parentNode.insertBefore(container, anchor.nextSibling);
   }
   container.innerHTML=`
-    <div class="cw-sample">
+    <div class="cw-sample" style="color: var(--card-text);
+background: var(--card-bg)">
       <div class="cw-sample-box" id="cw-sample-box">Aa — Sample</div>
       <div class="cw-controls">
         <label>FG <input id="cw-color1" type="color" value="#000000"></label>
@@ -83,7 +84,8 @@
           <label>Text <input id="cw-sample-text" value="Contrast sample text"></label>
         </div>
       </div>
-      <div class="cw-info">
+      <div class="cw-info" style="color: var(--card-text);
+background: var(--card-bg)">
         <div class="cw-ratio" id="cw-ratio">Contrast: —</div>
         <div class="cw-wcag" id="cw-wcag">WCAG: —</div>
       </div>
@@ -96,14 +98,15 @@
       <div class="cw-fav" id="cw-fav-list"></div>
       <div class="cw-note">Tip: click a palette color to set FG/BG, press X to swap.</div>
     </div>
-    <aside id="cw-suggestions-panel">
+    <aside id="cw-suggestions-panel" style="color: var(--card-text);
+background: var(--card-bg)">
       <h4>Suggestions & Actions</h4>
       <div id="cw-suggestions-container"></div>
       <div>
         <button id="cw-copy-css">Copy CSS snippet</button>
         <button id="cw-download-txt">Report Text</button>
         <button id="cw-download-json">Report Genshin</button>
-                <button id="cw-dark-toggle">Toggle Dark Mode</button>
+               
       </div>
     </aside>
     <div class="cw-copy-toast" id="cw-copy-toast">Copied</div>
@@ -314,19 +317,6 @@ Generated: ${new Date().toLocaleString()}
     URL.revokeObjectURL(url);
   });
   
-  /* ---------- Dark Mode ---------- */
-  let darkActive=false;
-  darkToggleBtn.addEventListener('click',()=>{
-    darkActive=!darkActive;
-    document.body.style.backgroundColor=darkActive?'#1e1e1e':'';
-    document.body.style.color=darkActive?'#ddd':'';
-    container.querySelectorAll('input, select, button').forEach(el=>{
-      el.style.backgroundColor=darkActive?'#333':'';
-      el.style.color=darkActive?'#ddd':'';
-      el.style.borderColor=darkActive?'#555':'';
-    });
-  });
-
   /* ---------- Demo ---------- */
   demoBtn.addEventListener('click',()=>{
     let step=0;

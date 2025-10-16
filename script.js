@@ -676,7 +676,7 @@ document.addEventListener('DOMContentLoaded', () => {
       textAlign: 'center',
       transition: 'background-color 0.3s ease, color 0.3s ease'
     });
-    mockup.textContent = ' selected live color preview ';
+    mockup.textContent = 'selected live color preview';
     palette.parentNode.insertBefore(mockup, palette.nextSibling);
   }
 
@@ -2123,3 +2123,269 @@ document.addEventListener("DOMContentLoaded", function() {
     }, 4000);
   }
 });
+// === Neon Color Film Slider with Variable Speed ===
+(function() {
+  const sliderTrack = document.querySelector(".slider-track");
+  const colorBoxes = document.querySelectorAll(".color-image");
+  let isPaused = false;
+
+  // Unique random color generator
+  function sliderRandomColor() {
+    const letters = '0123456789ABCDEF';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+      color += letters[Math.floor(Math.random() * 16)];
+    }
+    return color;
+  }
+
+  // Fill boxes immediately on load
+  function initColors() {
+    colorBoxes.forEach(box => {
+      const color = sliderRandomColor();
+      box.style.background = color;
+      box.style.boxShadow = `0 0 10px 3px ${color}`;
+    });
+  }
+
+  // Clone boxes for seamless infinite loop
+  function duplicateForInfiniteLoop() {
+    const clone = sliderTrack.cloneNode(true);
+    sliderTrack.appendChild(clone);
+  }
+
+  // Gradually change colors and glow
+  function graduallyChangeColors() {
+    setInterval(() => {
+      const randomBox = colorBoxes[Math.floor(Math.random() * colorBoxes.length)];
+      const color = sliderRandomColor();
+      randomBox.style.background = color;
+      randomBox.style.boxShadow = `0 0 20px 6px ${color}`;
+      setTimeout(() => {
+        randomBox.style.boxShadow = `0 0 5px 2px ${color}`;
+      }, 800);
+    }, 1000);
+  }
+
+  // Hover pause
+  sliderTrack.addEventListener("mouseenter", () => {
+    sliderTrack.style.animationPlayState = "paused";
+  });
+
+  // Hover leave resume
+  sliderTrack.addEventListener("mouseleave", () => {
+    if (!isPaused) {
+      sliderTrack.style.animationPlayState = "running";
+    }
+  });
+
+  // Click toggle pause/resume
+  sliderTrack.addEventListener("click", () => {
+    isPaused = !isPaused;
+    sliderTrack.style.animationPlayState = isPaused ? "paused" : "running";
+  });
+
+  // Randomize scroll speed slightly every loop
+  function randomizeScrollSpeed() {
+    const minSpeed = 20; // minimum seconds for full scroll
+    const maxSpeed = 35; // maximum seconds
+    const speed = Math.random() * (maxSpeed - minSpeed) + minSpeed;
+    sliderTrack.style.animationDuration = `${speed}s`;
+  }
+
+  // Update speed each time animation loops
+  sliderTrack.addEventListener("animationiteration", randomizeScrollSpeed);
+
+  // Initialize everything
+  initColors();
+  duplicateForInfiniteLoop();
+  graduallyChangeColors();
+  randomizeScrollSpeed(); // initial speed
+})();
+/* ==============================
+   Unified Live Markup Preview
+   Compatible with palette hover & keyboard shortcuts
+   ============================== */
+document.addEventListener('DOMContentLoaded', () => {
+
+  const palette = document.getElementById('palette');
+  const livePreview = document.getElementById('live-preview');
+  const mockup = document.getElementById('mockup-preview');
+  const hexInput = document.getElementById('hex-input');
+  const applyBtn = document.getElementById('applyHex');
+
+  if (!palette || !mockup || !hexInput || !applyBtn) return;
+
+  // Create color name display
+  let colorNameEl = document.getElementById('color-name-preview');
+  if (!colorNameEl) {
+    colorNameEl = document.createElement('div');
+    colorNameEl.id = 'color-name-preview';
+    colorNameEl.style.marginTop = '6px';
+    colorNameEl.style.fontWeight = 'bold';
+    colorNameEl.style.fontSize = '14px';
+    mockup.parentNode.insertBefore(colorNameEl, mockup.nextSibling);
+  }
+
+  // Utilities
+  const cssColorNames = {
+    "black":"#000000","white":"#ffffff","red":"#ff0000","green":"#008000","blue":"#0000ff",
+    "yellow":"#ffff00","orange":"#ffa500","purple":"#800080","pink":"#ffc0cb","gray":"#808080",
+    "brown":"#a52a2a","cyan":"#00ffff","magenta":"#ff00ff","lime":"#00ff00","navy":"#000080",
+    "teal":"#008080","olive":"#808000","maroon":"#800000","silver":"#c0c0c0"
+  };
+
+  function isValidColor(strColor) {
+    const s = new Option().style;
+    s.color = strColor;
+    return s.color !== '';
+  }
+
+  function getReadableText(bg) {
+    const c = document.createElement('div');
+    c.style.color = bg;
+    document.body.appendChild(c);
+    const rgb = window.getComputedStyle(c).color;
+    document.body.removeChild(c);
+    const match = rgb.match(/\d+/g);
+    if (!match) return '#000';
+    const r = parseInt(match[0]), g = parseInt(match[1]), b = parseInt(match[2]);
+    const brightness = (r*299 + g*587 + b*114)/1000;
+    return brightness > 125 ? '#000' : '#fff';
+  }
+
+  function getColorName(color) {
+    if (!isValidColor(color)) return color;
+    const ctx = document.createElement('canvas').getContext('2d');
+    ctx.fillStyle = color;
+    const computedColor = ctx.fillStyle.toLowerCase();
+    for (const name in cssColorNames) {
+      if (cssColorNames[name].toLowerCase() === computedColor) return name;
+    }
+    return computedColor;
+  }
+
+  function updateLivePreview(value) {
+    if (!value || !isValidColor(value)) return;
+    mockup.style.backgroundColor = value;
+    mockup.style.color = getReadableText(value);
+    mockup.textContent = value;
+    colorNameEl.textContent = `Color Name: ${getColorName(value)}`;
+  }
+
+  // ---------------- Hover Palette ----------------
+  palette.addEventListener('mouseover', ev => {
+    const box = ev.target.closest('.color-box');
+    if (!box || !box.dataset.hex) return;
+    const hex = box.dataset.hex;
+    if (livePreview && livePreview.textContent.includes(hex)) return; // locked
+    updateLivePreview(hex);
+  });
+
+  palette.addEventListener('mouseleave', () => {
+    mockup.style.backgroundColor = '';
+    mockup.style.color = '';
+    mockup.textContent = 'Live Mockup Preview';
+    colorNameEl.textContent = '';
+  });
+
+  // ---------------- Apply / Input ----------------
+  applyBtn.addEventListener('click', () => {
+    const value = hexInput.value.trim();
+    if (!isValidColor(value)) return toast('Invalid color input');
+    updateLivePreview(value);
+    toast(`Applied color: ${value}`);
+  });
+
+  hexInput.addEventListener('input', (e) => {
+    const value = e.target.value.trim();
+    if (isValidColor(value)) updateLivePreview(value);
+  });
+
+  // ---------------- Keyboard Shortcuts ----------------
+  document.addEventListener('keydown', e => {
+    if (['INPUT','TEXTAREA','SELECT'].includes(document.activeElement.tagName)) return;
+
+    const generateBtn = document.getElementById('generate-btn');
+
+    switch(e.key.toLowerCase()) {
+      case 'g': // Generate palette
+        e.preventDefault();
+        generateBtn?.click();
+        toast('Generated new palette');
+        break;
+      case 'c': // Copy live preview color
+        e.preventDefault();
+        if (mockup?.textContent?.includes('#')) {
+          const m = mockup.textContent.match(/#([0-9a-f]{3,6})/i);
+          const hex = m ? ('#' + m[1].toUpperCase()) : null;
+          if (hex) navigator.clipboard.writeText(hex).then(() => { toast(`Copied: ${hex}`); playPop(); });
+        }
+        break;
+      case 'm': // Toggle mockup visibility
+        e.preventDefault();
+        if (mockup) mockup.style.display = mockup.style.display === 'none' ? 'block' : 'none';
+        break;
+    }
+  });
+
+});// ===========================
+// Theme Toggle with Icon
+// ===========================
+const themeToggle = document.getElementById("themeToggle");
+const themeIcon = themeToggle.querySelector(".material-icons-round");
+const body = document.body;
+
+// Load saved theme from localStorage
+const savedTheme = localStorage.getItem("theme");
+if (savedTheme === "dark") {
+  body.classList.add("cw-dark");
+  themeIcon.textContent = "dark_mode";
+} else {
+  themeIcon.textContent = "light_mode";
+}
+
+// Toggle theme when clicked
+themeToggle.addEventListener("click", () => {
+  const isDark = body.classList.toggle("cw-dark");
+  themeIcon.textContent = isDark ? "dark_mode" : "light_mode";
+  localStorage.setItem("theme", isDark ? "dark" : "light");
+});
+document.addEventListener("DOMContentLoaded", () => {
+  const sliderTrack = document.getElementById("sliderTrack");
+  let isPaused = false;
+
+  // Random color generator
+  function randomColor() {
+    return '#' + Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0');
+  }
+
+  // Duplicate slider track for seamless scroll
+  function duplicateTrack() {
+    const clone = sliderTrack.cloneNode(true);
+    sliderTrack.appendChild(clone);
+  }
+
+  // Gradually update random colors in moving boxes
+  function updateColors() {
+    const boxes = sliderTrack.querySelectorAll(".color-image");
+    setInterval(() => {
+      if (!isPaused) {
+        const lastBox = sliderTrack.lastElementChild.querySelector(".color-image");
+        if (lastBox) lastBox.style.background = randomColor();
+      }
+    }, 1500);
+  }
+
+  // Hover to pause
+  sliderTrack.addEventListener("mouseenter", () => isPaused = true);
+  sliderTrack.addEventListener("mouseleave", () => isPaused = false);
+
+  // Click to toggle pause/resume
+  sliderTrack.addEventListener("click", () => isPaused = !isPaused);
+
+  // Initialize slider
+  duplicateTrack();
+  updateColors();
+});
+
